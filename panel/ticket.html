@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>جزئیات درخواست | پنل سرپرست تارا</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/variables.css">
+<link rel="stylesheet" href="../assets/css/base.css">
+<link rel="stylesheet" href="../assets/css/components.css">
+</head>
+<body data-page="ticket">
+
+<header class="site-header">
+  <div class="container site-header__inner">
+    <a href="dashboard.html" class="brand">
+      <img class="brand__logo" src="../assets/img/optimized/logo-mark.webp" alt="" width="60" height="44">
+      پنل سرپرست
+    </a>
+    <nav class="nav panel-nav" aria-label="پنل">
+      <ul class="nav__links">
+        <li><a href="dashboard.html">داشبورد</a></li>
+        <li><a href="index.html" aria-current="page">درخواست‌ها</a></li>
+        <li data-admin-only hidden><a href="supervisors.html">سرپرستان</a></li>
+        <li><a href="account.html">حساب من</a></li>
+        <li class="panel-nav__logout"><button class="btn btn--secondary btn--sm" type="button" data-logout>خروج</button></li>
+      </ul>
+      <span class="panel-header__user" data-user-name></span>
+      <button class="theme-toggle" type="button" aria-pressed="false" aria-label="تغییر پوسته"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><path d="M18 2L18.6178 3.23558C18.8833 3.76656 19.016 4.03205 19.1934 4.26211C19.3507 4.46626 19.5337 4.64927 19.7379 4.80664C19.9679 4.98397 20.2334 5.11672 20.7644 5.38221L22 6L20.7644 6.61779C20.2334 6.88328 19.9679 7.01603 19.7379 7.19336C19.5337 7.35073 19.3507 7.53374 19.1934 7.73789C19.016 7.96795 18.8833 8.23344 18.6178 8.76442L18 10L17.3822 8.76442C17.1167 8.23344 16.984 7.96795 16.8066 7.73789C16.6493 7.53374 16.4663 7.35073 16.2621 7.19336C16.0321 7.01603 15.7666 6.88328 15.2356 6.61779L14 6L15.2356 5.38221C15.7666 5.11672 16.0321 4.98397 16.2621 4.80664C16.4663 4.64927 16.6493 4.46626 16.8066 4.26211C16.984 4.03205 17.1167 3.76656 17.3822 3.23558L18 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M21 13.3893C19.689 15.689 17.2145 17.2395 14.3779 17.2395C10.1711 17.2395 6.76075 13.8292 6.76075 9.62233C6.76075 6.78554 8.31149 4.31094 10.6115 3C5.77979 3.45812 2 7.52692 2 12.4785C2 17.7371 6.26292 22 11.5215 22C16.4729 22 20.5415 18.2206 21 13.3893Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <button class="nav__toggle" type="button" aria-expanded="false" aria-label="باز کردن منو">☰</button>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <div class="page-hero page-hero--panel">
+    <div class="container">
+      <nav class="breadcrumb" aria-label="مسیر">
+        <a href="index.html">درخواست‌ها</a>
+        <span class="breadcrumb__sep">/</span>
+        <span data-ticket-crumb>درخواست</span>
+      </nav>
+      <div style="display:flex; flex-wrap:wrap; align-items:center; gap:var(--space-3);">
+        <h1 style="margin:0;" data-ticket-title>درخواست</h1>
+        <span class="badge" data-ticket-kind></span>
+        <span class="status-badge" data-ticket-status></span>
+      </div>
+    </div>
+  </div>
+
+  <section class="section">
+    <div class="container">
+      <p class="form-alert" id="ticket-alert" role="alert" hidden></p>
+
+      <div class="detail-grid" id="ticket-view" hidden>
+        <div>
+          <section style="margin-bottom:var(--space-10);">
+            <h2 style="font-size:var(--text-xl);">توضیحات متقاضی</h2>
+            <div class="info-card" style="box-shadow:var(--shadow-sm);">
+              <p class="ticket-message" data-field="message" style="margin:0;"></p>
+            </div>
+          </section>
+
+          <section style="margin-bottom:var(--space-10);">
+            <h2 style="font-size:var(--text-xl);">پیگیری</h2>
+            <form class="form info-card" id="ticket-form" style="box-shadow:var(--shadow-sm);">
+              <div class="form-row">
+                <div class="form-field">
+                  <label class="form-label" for="status">وضعیت</label>
+                  <select class="form-control" id="status" name="status">
+                    <option value="new">جدید</option>
+                    <option value="in_progress">در حال بررسی</option>
+                    <option value="done">انجام‌شده</option>
+                  </select>
+                </div>
+                <div class="form-field">
+                  <label class="form-label" for="assigned_to">مسئول</label>
+                  <select class="form-control" id="assigned_to" name="assigned_to">
+                    <option value="">بدون مسئول</option>
+                  </select>
+                  <button class="btn btn--ghost btn--sm assign-me" type="button" data-assign-me>به من بسپار</button>
+                </div>
+              </div>
+              <div class="form-field">
+                <label class="form-label" for="note">یادداشت داخلی</label>
+                <textarea class="form-control" id="note" name="note" rows="5" maxlength="5000" placeholder="نتیجه تماس، هماهنگی‌ها و…"></textarea>
+                <p class="form-hint">فقط سرپرستان این یادداشت را می‌بینند.</p>
+              </div>
+              <p class="form-hint" id="save-status" role="status"></p>
+              <button type="submit" class="btn btn--primary">ذخیره تغییرات</button>
+            </form>
+          </section>
+
+          <section>
+            <h2 style="font-size:var(--text-xl);">تاریخچه</h2>
+            <ol class="timeline" id="timeline"></ol>
+          </section>
+        </div>
+
+        <aside class="detail-aside">
+          <div class="info-card">
+            <ul class="info-list" style="margin:0;">
+              <li><span>نام و نام خانوادگی</span><span data-field="full_name"></span></li>
+              <li data-kind="course_request"><span>کد ملی</span><span dir="ltr" data-field="national_id"></span></li>
+              <li data-kind="consultation"><span>سازمان</span><span data-field="company"></span></li>
+              <li data-kind="course_request"><span>دوره</span><span data-field="course_title"></span></li>
+              <li data-kind="course_request"><span>مدرس</span><span data-field="instructor_name"></span></li>
+              <li><span>تلفن</span><span><a dir="ltr" data-field="phone"></a></span></li>
+              <li><span>ثبت</span><span data-field="created_at"></span></li>
+              <li><span>آخرین تغییر</span><span data-field="updated_at"></span></li>
+              <li><span>توسط</span><span data-field="updated_by"></span></li>
+            </ul>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script src="../assets/js/main.js"></script>
+<script src="../assets/js/panel.js"></script>
+</body>
+</html>

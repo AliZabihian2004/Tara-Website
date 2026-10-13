@@ -16,7 +16,7 @@
 <header class="site-header">
   <div class="container site-header__inner">
     <a href="index.html" class="brand">
-      <span class="brand__mark">ت</span>
+      <img class="brand__logo" src="assets/img/optimized/logo-mark.webp" alt="" width="60" height="44">
       آکادمی تارا
     </a>
     <nav class="nav">
@@ -27,9 +27,9 @@
         <li><a href="index.html#about">درباره ما</a></li>
         <li><a href="index.html#contact">تماس با ما</a></li>
       </ul>
-      <button class="theme-toggle" type="button" aria-pressed="false" aria-label="تغییر پوسته">🌙</button>
+      <button class="theme-toggle" type="button" aria-pressed="false" aria-label="تغییر پوسته"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><path d="M18 2L18.6178 3.23558C18.8833 3.76656 19.016 4.03205 19.1934 4.26211C19.3507 4.46626 19.5337 4.64927 19.7379 4.80664C19.9679 4.98397 20.2334 5.11672 20.7644 5.38221L22 6L20.7644 6.61779C20.2334 6.88328 19.9679 7.01603 19.7379 7.19336C19.5337 7.35073 19.3507 7.53374 19.1934 7.73789C19.016 7.96795 18.8833 8.23344 18.6178 8.76442L18 10L17.3822 8.76442C17.1167 8.23344 16.984 7.96795 16.8066 7.73789C16.6493 7.53374 16.4663 7.35073 16.2621 7.19336C16.0321 7.01603 15.7666 6.88328 15.2356 6.61779L14 6L15.2356 5.38221C15.7666 5.11672 16.0321 4.98397 16.2621 4.80664C16.4663 4.64927 16.6493 4.46626 16.8066 4.26211C16.984 4.03205 17.1167 3.76656 17.3822 3.23558L18 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M21 13.3893C19.689 15.689 17.2145 17.2395 14.3779 17.2395C10.1711 17.2395 6.76075 13.8292 6.76075 9.62233C6.76075 6.78554 8.31149 4.31094 10.6115 3C5.77979 3.45812 2 7.52692 2 12.4785C2 17.7371 6.26292 22 11.5215 22C16.4729 22 20.5415 18.2206 21 13.3893Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
       <button class="nav__toggle" type="button" aria-expanded="false" aria-label="باز کردن منو">☰</button>
-      <a href="index.html#courses" class="btn btn--primary nav__cta">مشاوره رایگان</a>
+      <a href="course-request.html" class="btn btn--primary nav__cta">درخواست دوره</a>
     </nav>
   </div>
 </header>
@@ -53,21 +53,53 @@
         </div>
         <div class="hero__stats">
           <div>
-            <div class="stat__num">+۱۲۰</div>
+            <div class="stat__num" data-count-to="120">+۱۲۰</div>
             <div class="stat__label">شرکت همکار</div>
           </div>
           <div>
-            <div class="stat__num">+۴۵۰۰</div>
+            <div class="stat__num" data-count-to="4500">+۴۵۰۰</div>
             <div class="stat__label">فراگیر سازمانی</div>
           </div>
           <div>
-            <div class="stat__num">+۳۰</div>
+            <div class="stat__num" data-count-to="30">+۳۰</div>
             <div class="stat__label">دوره تخصصی</div>
           </div>
         </div>
       </div>
-      <div class="hero__art">
-        <img src="assets/img/StockSnap_IHBPBLYUFE.jpg.crdownload" alt="کارگاه آموزشی تارا برای تیم‌های سازمانی">
+      <div class="hero-slider" role="region" aria-roledescription="اسلایدر" aria-label="تصاویر دوره‌های تارا" data-slider>
+        <div class="hero__art hero-slider__track" aria-live="off">
+          <div class="hero-slider__slide is-active" role="group" aria-roledescription="اسلاید" aria-label="۱ از ۷">
+            <img src="assets/img/optimized/hero-workshop.webp" fetchpriority="high" alt="کارگاه آموزشی تارا برای تیم‌های سازمانی" decoding="async">
+          </div>
+          <div class="hero-slider__slide" role="group" aria-roledescription="اسلاید" aria-label="۲ از ۷" aria-hidden="true" inert>
+            <img data-src="assets/img/optimized/course-ai.webp" alt="دوره هوش مصنوعی برای مدیران" decoding="async">
+            <a class="hero-slider__caption" href="courses/ai-for-managers.html">هوش مصنوعی برای مدیران</a>
+          </div>
+          <div class="hero-slider__slide" role="group" aria-roledescription="اسلاید" aria-label="۳ از ۷" aria-hidden="true" inert>
+            <img data-src="assets/img/optimized/course-accounting.webp" alt="دوره حسابداری مدیریتی" decoding="async">
+            <a class="hero-slider__caption" href="courses/managerial-accounting.html">حسابداری مدیریتی برای غیرمالی‌ها</a>
+          </div>
+          <div class="hero-slider__slide" role="group" aria-roledescription="اسلاید" aria-label="۴ از ۷" aria-hidden="true" inert>
+            <img data-src="assets/img/optimized/course-finance.webp" alt="دوره تحلیل مالی پیشرفته" decoding="async">
+            <a class="hero-slider__caption" href="courses/financial-analysis.html">تحلیل مالی پیشرفته</a>
+          </div>
+          <div class="hero-slider__slide" role="group" aria-roledescription="اسلاید" aria-label="۵ از ۷" aria-hidden="true" inert>
+            <img data-src="assets/img/optimized/course-data.webp" alt="دوره تصمیم‌گیری داده‌محور با هوش مصنوعی" decoding="async">
+            <a class="hero-slider__caption" href="courses/ai-data-driven-decisions.html">تصمیم‌گیری داده‌محور با هوش مصنوعی</a>
+          </div>
+          <div class="hero-slider__slide" role="group" aria-roledescription="اسلاید" aria-label="۶ از ۷" aria-hidden="true" inert>
+            <img data-src="assets/img/optimized/course-leadership.webp" alt="دوره مهارت‌های رهبری سازمانی" decoding="async">
+            <a class="hero-slider__caption" href="courses/leadership-skills.html">مهارت‌های رهبری سازمانی</a>
+          </div>
+          <div class="hero-slider__slide" role="group" aria-roledescription="اسلاید" aria-label="۷ از ۷" aria-hidden="true" inert>
+            <img data-src="assets/img/optimized/course-tax.webp" alt="دوره مالیات و بودجه‌ریزی سازمانی" decoding="async">
+            <a class="hero-slider__caption" href="courses/tax-and-budgeting.html">مالیات و بودجه‌ریزی سازمانی</a>
+          </div>
+          <!-- RTL: previous sits on the right (points right), next on the left (points left) -->
+          <button class="hero-slider__nav hero-slider__nav--prev" type="button" aria-label="تصویر قبلی" data-slider-prev><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+          <button class="hero-slider__nav hero-slider__nav--next" type="button" aria-label="تصویر بعدی" data-slider-next><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        </div>
+        <div class="hero-slider__dots" data-slider-dots></div>
       </div>
     </div>
   </section>
@@ -134,17 +166,35 @@
         <p>از حسابداری مدیریتی تا به‌کارگیری هوش مصنوعی در تصمیم‌گیری؛ دوره‌ای متناسب با نیاز تیم خود پیدا کنید.</p>
       </div>
 
-      <div class="grid grid--3">
+      <div class="course-filters" role="search" aria-label="جستجو و فیلتر دوره‌ها">
+        <input class="form-control course-filters__search" id="course-search" type="search" placeholder="جستجوی دوره…" aria-label="جستجوی دوره">
+        <div class="tabs" role="group" aria-label="دسته‌بندی">
+          <button class="tabs__btn" type="button" data-category="" aria-pressed="true">همه</button>
+          <button class="tabs__btn" type="button" data-category="ai" aria-pressed="false">هوش مصنوعی</button>
+          <button class="tabs__btn" type="button" data-category="accounting" aria-pressed="false">حسابداری</button>
+          <button class="tabs__btn" type="button" data-category="organization" aria-pressed="false">مهارت‌های سازمانی</button>
+        </div>
+        <select class="form-control course-filters__instructor" id="course-instructor" aria-label="مدرس">
+          <option value="">همه مدرسان</option>
+          <option value="sara-moradi">سارا مرادی</option>
+          <option value="hossein-karimi">حسین کریمی</option>
+          <option value="mina-ahmadi">مینا احمدی</option>
+          <option value="reza-fallahi">رضا فلاحی</option>
+        </select>
+      </div>
+      <p class="course-filters__status" id="course-filter-status" role="status" aria-live="polite"></p>
 
-        <a href="courses/ai-for-managers.html" class="card course-card">
-          <div class="course-card__media"><img src="assets/img/course-ai.jpg" alt="دوره هوش مصنوعی برای مدیران"></div>
+      <div class="grid grid--3" id="course-grid">
+
+        <a href="courses/ai-for-managers.html" class="card course-card" data-category="ai" data-instructors="sara-moradi reza-fallahi" data-hours="16">
+          <div class="course-card__media"><img loading="lazy" src="assets/img/optimized/course-ai.webp" alt="دوره هوش مصنوعی برای مدیران"></div>
           <div class="course-card__body">
             <span class="course-card__tag">هوش مصنوعی</span>
             <h3 class="course-card__title">هوش مصنوعی برای مدیران</h3>
             <p class="course-card__desc">آشنایی مدیران با ابزارهای هوش مصنوعی برای تصمیم‌گیری سریع‌تر و بهینه‌سازی فرآیندهای سازمانی.</p>
             <div class="course-card__meta">
               <div class="course-card__instructor">
-                <img class="avatar" src="assets/img/instructor-sara.jpg" alt="">
+                <img loading="lazy" class="avatar" src="assets/img/optimized/instructor-sara.webp" alt="">
                 <span>سارا مرادی</span>
               </div>
               <span>۱۶ ساعت</span>
@@ -152,15 +202,15 @@
           </div>
         </a>
 
-        <a href="courses/managerial-accounting.html" class="card course-card">
-          <div class="course-card__media"><img src="assets/img/course-accouting.jpg" alt="دوره حسابداری مدیریتی"></div>
+        <a href="courses/managerial-accounting.html" class="card course-card" data-category="accounting" data-instructors="hossein-karimi" data-hours="20">
+          <div class="course-card__media"><img loading="lazy" src="assets/img/optimized/course-accounting.webp" alt="دوره حسابداری مدیریتی"></div>
           <div class="course-card__body">
             <span class="course-card__tag">حسابداری</span>
             <h3 class="course-card__title">حسابداری مدیریتی برای غیرمالی‌ها</h3>
             <p class="course-card__desc">درک صورت‌های مالی، بودجه‌بندی و تحلیل هزینه برای مدیران غیرمالی سازمان.</p>
             <div class="course-card__meta">
               <div class="course-card__instructor">
-                <img class="avatar" src="assets/img/instructor-hossein.jpg" alt="">
+                <img loading="lazy" class="avatar" src="assets/img/optimized/instructor-hossein.webp" alt="">
                 <span>حسین کریمی</span>
               </div>
               <span>۲۰ ساعت</span>
@@ -168,15 +218,15 @@
           </div>
         </a>
 
-        <a href="courses/financial-analysis.html" class="card course-card">
-          <div class="course-card__media"><img src="assets/img/course-finance.jpg" alt="دوره تحلیل مالی پیشرفته"></div>
+        <a href="courses/financial-analysis.html" class="card course-card" data-category="accounting" data-instructors="hossein-karimi" data-hours="18">
+          <div class="course-card__media"><img loading="lazy" src="assets/img/optimized/course-finance.webp" alt="دوره تحلیل مالی پیشرفته"></div>
           <div class="course-card__body">
             <span class="course-card__tag">حسابداری</span>
             <h3 class="course-card__title">تحلیل مالی پیشرفته</h3>
             <p class="course-card__desc">ابزارها و تکنیک‌های تحلیل صورت‌های مالی برای ارزیابی عملکرد و ریسک کسب‌وکار.</p>
             <div class="course-card__meta">
               <div class="course-card__instructor">
-                <img class="avatar" src="assets/img/instructor-hossein.jpg" alt="">
+                <img loading="lazy" class="avatar" src="assets/img/optimized/instructor-hossein.webp" alt="">
                 <span>حسین کریمی</span>
               </div>
               <span>۱۸ ساعت</span>
@@ -184,15 +234,15 @@
           </div>
         </a>
 
-        <a href="courses/ai-data-driven-decisions.html" class="card course-card">
-          <div class="course-card__media"><img src="assets/img/course-data.jpg" alt="دوره تصمیم‌گیری داده‌محور با هوش مصنوعی"></div>
+        <a href="courses/ai-data-driven-decisions.html" class="card course-card" data-category="ai" data-instructors="sara-moradi reza-fallahi" data-hours="12">
+          <div class="course-card__media"><img loading="lazy" src="assets/img/optimized/course-data.webp" alt="دوره تصمیم‌گیری داده‌محور با هوش مصنوعی"></div>
           <div class="course-card__body">
             <span class="course-card__tag">هوش مصنوعی</span>
             <h3 class="course-card__title">تصمیم‌گیری داده‌محور با هوش مصنوعی</h3>
             <p class="course-card__desc">استفاده از داده و مدل‌های هوش مصنوعی برای تصمیم‌گیری استراتژیک در سازمان.</p>
             <div class="course-card__meta">
               <div class="course-card__instructor">
-                <img class="avatar" src="assets/img/instructor-sara.jpg" alt="">
+                <img loading="lazy" class="avatar" src="assets/img/optimized/instructor-sara.webp" alt="">
                 <span>سارا مرادی</span>
               </div>
               <span>۱۲ ساعت</span>
@@ -200,15 +250,15 @@
           </div>
         </a>
 
-        <a href="courses/leadership-skills.html" class="card course-card">
-          <div class="course-card__media"><img src="assets/img/course-leadership.jpg" alt="دوره مهارت‌های رهبری سازمانی"></div>
+        <a href="courses/leadership-skills.html" class="card course-card" data-category="organization" data-instructors="mina-ahmadi" data-hours="14">
+          <div class="course-card__media"><img loading="lazy" src="assets/img/optimized/course-leadership.webp" alt="دوره مهارت‌های رهبری سازمانی"></div>
           <div class="course-card__body">
             <span class="course-card__tag">مهارت‌های سازمانی</span>
             <h3 class="course-card__title">مهارت‌های رهبری سازمانی</h3>
             <p class="course-card__desc">تقویت مهارت‌های رهبری تیم، مدیریت تغییر و ارتباطات مؤثر برای مدیران میانی و ارشد.</p>
             <div class="course-card__meta">
               <div class="course-card__instructor">
-                <img class="avatar" src="assets/img/instructor-mina.jpg" alt="">
+                <img loading="lazy" class="avatar" src="assets/img/optimized/instructor-mina.webp" alt="">
                 <span>مینا احمدی</span>
               </div>
               <span>۱۴ ساعت</span>
@@ -216,15 +266,15 @@
           </div>
         </a>
 
-        <a href="courses/tax-and-budgeting.html" class="card course-card">
-          <div class="course-card__media"><img src="assets/img/course-tax.jpg" alt="دوره مالیات و بودجه‌ریزی سازمانی"></div>
+        <a href="courses/tax-and-budgeting.html" class="card course-card" data-category="accounting" data-instructors="hossein-karimi" data-hours="10">
+          <div class="course-card__media"><img loading="lazy" src="assets/img/optimized/course-tax.webp" alt="دوره مالیات و بودجه‌ریزی سازمانی"></div>
           <div class="course-card__body">
             <span class="course-card__tag">حسابداری</span>
             <h3 class="course-card__title">مالیات و بودجه‌ریزی سازمانی</h3>
             <p class="course-card__desc">آشنایی با قوانین مالیاتی به‌روز و فرآیند بودجه‌ریزی سالانه سازمان.</p>
             <div class="course-card__meta">
               <div class="course-card__instructor">
-                <img class="avatar" src="assets/img/instructor-hossein.jpg" alt="">
+                <img loading="lazy" class="avatar" src="assets/img/optimized/instructor-hossein.webp" alt="">
                 <span>حسین کریمی</span>
               </div>
               <span>۱۰ ساعت</span>
@@ -232,6 +282,10 @@
           </div>
         </a>
 
+      </div>
+      <div class="course-filters__empty" id="course-empty" hidden>
+        <p>دوره‌ای با این مشخصات پیدا نشد.</p>
+        <button class="btn btn--secondary btn--sm" type="button" id="course-filters-reset">نمایش همه دوره‌ها</button>
       </div>
     </div>
   </section>
@@ -249,28 +303,28 @@
 
       <div class="grid grid--4">
         <a href="instructors/sara-moradi.html" class="card instructor-card">
-          <img class="instructor-card__photo" src="assets/img/instructor-sara.jpg" alt="سارا مرادی">
+          <img loading="lazy" class="instructor-card__photo" src="assets/img/optimized/instructor-sara.webp" alt="سارا مرادی">
           <h3 class="instructor-card__name">سارا مرادی</h3>
           <div class="instructor-card__role">متخصص هوش مصنوعی سازمانی</div>
           <p class="instructor-card__bio">۱۰ سال تجربه در پیاده‌سازی راهکارهای هوش مصنوعی برای سازمان‌های بزرگ.</p>
           <span class="btn btn--ghost btn--sm">مشاهده پروفایل</span>
         </a>
         <a href="instructors/hossein-karimi.html" class="card instructor-card">
-          <img class="instructor-card__photo" src="assets/img/instructor-hossein.jpg" alt="حسین کریمی">
+          <img loading="lazy" class="instructor-card__photo" src="assets/img/optimized/instructor-hossein.webp" alt="حسین کریمی">
           <h3 class="instructor-card__name">حسین کریمی</h3>
           <div class="instructor-card__role">مدرس حسابداری و مالی</div>
           <p class="instructor-card__bio">حسابدار رسمی با بیش از ۱۵ سال سابقه مدیریت مالی در شرکت‌های هلدینگ.</p>
           <span class="btn btn--ghost btn--sm">مشاهده پروفایل</span>
         </a>
         <a href="instructors/mina-ahmadi.html" class="card instructor-card">
-          <img class="instructor-card__photo" src="assets/img/instructor-mina.jpg" alt="مینا احمدی">
+          <img loading="lazy" class="instructor-card__photo" src="assets/img/optimized/instructor-mina.webp" alt="مینا احمدی">
           <h3 class="instructor-card__name">مینا احمدی</h3>
           <div class="instructor-card__role">مربی توسعه سازمانی و رهبری</div>
           <p class="instructor-card__bio">مشاور توسعه منابع انسانی با تمرکز بر رهبری تیم و مدیریت تغییر.</p>
           <span class="btn btn--ghost btn--sm">مشاهده پروفایل</span>
         </a>
         <a href="instructors/reza-fallahi.html" class="card instructor-card">
-          <img class="instructor-card__photo" src="assets/img/instructor-reza.jpg" alt="رضا فلاحی">
+          <img loading="lazy" class="instructor-card__photo" src="assets/img/optimized/instructor-reza.webp" alt="رضا فلاحی">
           <h3 class="instructor-card__name">رضا فلاحی</h3>
           <div class="instructor-card__role">مدرس داده و هوش مصنوعی کاربردی</div>
           <p class="instructor-card__bio">دانش‌آموخته مهندسی کامپیوتر و متخصص علم داده در پروژه‌های سازمانی.</p>
@@ -293,7 +347,7 @@
         <div class="testimonial">
           <p class="testimonial__quote">«دوره حسابداری مدیریتی تارا باعث شد مدیران غیرمالی ما تصمیمات مالی دقیق‌تری بگیرند.»</p>
           <div class="testimonial__author">
-            <img class="avatar" style="width:44px;height:44px;" src="assets/img/instructor-hossein.jpg" alt="">
+            <img loading="lazy" class="avatar" style="width:44px;height:44px;" src="assets/img/optimized/instructor-hossein.webp" alt="">
             <div>
               <strong>مدیر منابع انسانی</strong>
               <span>هلدینگ پویا</span>
@@ -303,7 +357,7 @@
         <div class="testimonial">
           <p class="testimonial__quote">«دوره هوش مصنوعی برای مدیران دیدگاه تیم رهبری ما را نسبت به فناوری کاملاً تغییر داد.»</p>
           <div class="testimonial__author">
-            <img class="avatar" style="width:44px;height:44px;" src="assets/img/instructor-sara.jpg" alt="">
+            <img loading="lazy" class="avatar" style="width:44px;height:44px;" src="assets/img/optimized/instructor-sara.webp" alt="">
             <div>
               <strong>مدیرعامل</strong>
               <span>فناوران البرز</span>
@@ -313,7 +367,7 @@
         <div class="testimonial">
           <p class="testimonial__quote">«برگزاری دوره اختصاصی درون‌سازمانی تارا کاملاً منطبق با نیازهای تیم ما طراحی شد.»</p>
           <div class="testimonial__author">
-            <img class="avatar" style="width:44px;height:44px;" src="assets/img/instructor-mina.jpg" alt="">
+            <img loading="lazy" class="avatar" style="width:44px;height:44px;" src="assets/img/optimized/instructor-mina.webp" alt="">
             <div>
               <strong>مدیر آموزش</strong>
               <span>گروه صنعتی آرمان</span>
@@ -325,14 +379,125 @@
   </section>
 
   <!-- CTA -->
-  <section class="section" id="contact">
-    <div class="container">
-      <div class="cta-band">
+  <!-- FAQ -->
+  <section class="section" id="faq">
+    <div class="container" style="max-width:860px;">
+      <div class="section-head" style="justify-content:center; text-align:center;">
         <div>
-          <h2>آماده ارتقای مهارت‌های سازمان خود هستید؟</h2>
-          <p>با کارشناسان تارا در تماس باشید تا دوره متناسب با نیاز تیم شما را طراحی کنیم.</p>
+          <span class="eyebrow">پرسش‌های متداول</span>
+          <h2>پاسخ پرسش‌های رایج سازمان‌ها</h2>
         </div>
-        <a href="mailto:info@tara-academy.ir" class="btn btn--primary">درخواست مشاوره رایگان</a>
+      </div>
+      <div class="curriculum">
+        <details class="curriculum-item">
+          <summary class="curriculum-item__head">
+            <span>دوره‌ها به چه صورتی برگزار می‌شوند؟</span>
+            <span class="curriculum-item__icon" aria-hidden="true">+</span>
+          </summary>
+          <div class="curriculum-item__body"><p>هر دوره به‌صورت حضوری در محل سازمان شما، در مرکز آموزشی تارا یا به‌صورت آنلاین زنده برگزار می‌شود. زمان‌بندی جلسات با هماهنگی تیم شما تنظیم می‌شود.</p></div>
+        </details>
+        <details class="curriculum-item">
+          <summary class="curriculum-item__head">
+            <span>آیا می‌توان محتوای دوره را متناسب با سازمان ما تغییر داد؟</span>
+            <span class="curriculum-item__icon" aria-hidden="true">+</span>
+          </summary>
+          <div class="curriculum-item__body"><p>بله. پیش از شروع، نیازسنجی کوتاهی انجام می‌دهیم و مثال‌ها، تمرین‌ها و تأکید سرفصل‌ها را با صنعت و چالش‌های تیم شما هماهنگ می‌کنیم.</p></div>
+        </details>
+        <details class="curriculum-item">
+          <summary class="curriculum-item__head">
+            <span>حداقل و حداکثر تعداد شرکت‌کنندگان چند نفر است؟</span>
+            <span class="curriculum-item__icon" aria-hidden="true">+</span>
+          </summary>
+          <div class="curriculum-item__body"><p>برای حفظ کیفیت تعامل، هر گروه بین ۸ تا ۲۵ نفر است. برای تیم‌های بزرگ‌تر، دوره را در چند گروه موازی برگزار می‌کنیم.</p></div>
+        </details>
+        <details class="curriculum-item">
+          <summary class="curriculum-item__head">
+            <span>به شرکت‌کنندگان گواهی داده می‌شود؟</span>
+            <span class="curriculum-item__icon" aria-hidden="true">+</span>
+          </summary>
+          <div class="curriculum-item__body"><p>بله. به شرکت‌کنندگانی که دست‌کم ۸۰٪ جلسات را گذرانده و پروژه پایانی را تحویل داده باشند، گواهی پایان دوره آکادمی تارا اعطا می‌شود.</p></div>
+        </details>
+        <details class="curriculum-item">
+          <summary class="curriculum-item__head">
+            <span>هزینه دوره‌ها چگونه محاسبه می‌شود؟</span>
+            <span class="curriculum-item__icon" aria-hidden="true">+</span>
+          </summary>
+          <div class="curriculum-item__body"><p>هزینه به مدت دوره، تعداد شرکت‌کنندگان، نحوه برگزاری و میزان سفارشی‌سازی بستگی دارد. پس از ثبت درخواست، پیش‌فاکتور دقیق برای شما ارسال می‌شود.</p></div>
+        </details>
+        <details class="curriculum-item">
+          <summary class="curriculum-item__head">
+            <span>پس از ثبت درخواست چه اتفاقی می‌افتد؟</span>
+            <span class="curriculum-item__icon" aria-hidden="true">+</span>
+          </summary>
+          <div class="curriculum-item__body"><p>کارشناسان تارا معمولاً ظرف یک روز کاری با شما تماس می‌گیرند تا نیاز تیم، زمان‌بندی و جزئیات برگزاری را هماهنگ کنند.</p></div>
+        </details>
+        <details class="curriculum-item">
+          <summary class="curriculum-item__head">
+            <span>آیا پس از پایان دوره پشتیبانی وجود دارد؟</span>
+            <span class="curriculum-item__icon" aria-hidden="true">+</span>
+          </summary>
+          <div class="curriculum-item__body"><p>بله. تا یک ماه پس از پایان دوره، شرکت‌کنندگان می‌توانند پرسش‌های خود را با مدرس مطرح کنند و برای برخی دوره‌ها جلسه پیگیری نیز برگزار می‌شود.</p></div>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONSULTATION -->
+  <section class="section" id="contact" style="background: var(--surface-raised); border-block: 1px solid var(--border);">
+    <div class="container consult">
+      <div class="consult__pitch">
+        <span class="eyebrow">مشاوره رایگان</span>
+        <h2>آماده ارتقای مهارت‌های سازمان خود هستید؟</h2>
+        <p>فرم را پر کنید تا کارشناسان تارا با شما تماس بگیرند و دوره‌ای متناسب با نیاز تیم‌تان پیشنهاد دهند. مشاوره و نیازسنجی اولیه رایگان است.</p>
+        <ul class="credential-list">
+          <li><span class="dot"></span><span>تماس کارشناس معمولاً ظرف یک روز کاری</span></li>
+          <li><span class="dot"></span><span>نیازسنجی و پیشنهاد سرفصل متناسب با سازمان شما</span></li>
+          <li><span class="dot"></span><span>امکان برگزاری حضوری، آنلاین یا ترکیبی</span></li>
+        </ul>
+        <p class="text-muted" style="font-size:var(--text-sm); margin:var(--space-6) 0 0;">
+          دوره مشخصی در نظر دارید؟ <a href="course-request.html" style="font-weight:600;">فرم درخواست دوره</a> را پر کنید.
+        </p>
+      </div>
+
+      <div class="info-card">
+        <form class="form" id="consult-form" novalidate>
+          <div class="form-field">
+            <label class="form-label" for="consult-name">نام و نام خانوادگی</label>
+            <input class="form-control" id="consult-name" name="name" type="text" autocomplete="name" maxlength="100" required aria-describedby="consult-name-error">
+            <p class="form-error" id="consult-name-error">لطفاً نام خود را وارد کنید.</p>
+          </div>
+          <div class="form-row">
+            <div class="form-field">
+              <label class="form-label" for="consult-phone">شماره تماس</label>
+              <input class="form-control" id="consult-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" dir="ltr" placeholder="09123456789" required aria-describedby="consult-phone-error">
+              <p class="form-error" id="consult-phone-error">لطفاً یک شماره موبایل معتبر وارد کنید.</p>
+            </div>
+            <div class="form-field">
+              <label class="form-label" for="consult-company">نام سازمان <span class="text-muted" style="font-weight:400;">(اختیاری)</span></label>
+              <input class="form-control" id="consult-company" name="company" type="text" autocomplete="organization" maxlength="100" aria-describedby="consult-company-error">
+              <p class="form-error" id="consult-company-error">نام سازمان حداکثر ۱۰۰ کاراکتر است.</p>
+            </div>
+          </div>
+          <div class="form-field">
+            <label class="form-label" for="consult-message">نیاز شما</label>
+            <textarea class="form-control" id="consult-message" name="message" rows="4" required placeholder="مثلاً: تیم ۱۵ نفره فروش، نیاز به آموزش تحلیل داده…" aria-describedby="consult-message-error"></textarea>
+            <p class="form-error" id="consult-message-error">لطفاً دست‌کم ۱۰ کاراکتر درباره نیاز خود بنویسید.</p>
+          </div>
+
+          <div class="form-honeypot" aria-hidden="true">
+            <label for="consult-website">وب‌سایت</label>
+            <input id="consult-website" name="website" type="text" tabindex="-1" autocomplete="off">
+          </div>
+
+          <p class="form-alert" id="consult-alert" role="alert" hidden>ارسال درخواست ناموفق بود؛ لطفاً دوباره تلاش کنید.</p>
+          <button type="submit" class="btn btn--primary btn--block">درخواست مشاوره رایگان</button>
+        </form>
+
+        <div class="form-success" id="consult-success" role="status" tabindex="-1" hidden>
+          <div class="form-success__icon">✓</div>
+          <h3 style="font-size:var(--text-xl); margin-bottom:var(--space-2);">درخواست شما ثبت شد</h3>
+          <p>کارشناسان تارا به‌زودی با شما تماس می‌گیرند.</p>
+        </div>
       </div>
     </div>
   </section>
@@ -343,7 +508,7 @@
   <div class="container">
     <div class="footer__grid">
       <div class="footer__brand">
-        <a href="index.html" class="brand"><span class="brand__mark">ت</span>آکادمی تارا</a>
+        <a href="index.html" class="brand"><img class="brand__logo" src="assets/img/optimized/logo-mark.webp" alt="" width="60" height="44">آکادمی تارا</a>
         <p>ارائه‌دهنده دوره‌های آموزش سازمانی تخصصی در حوزه حسابداری، هوش مصنوعی و توسعه مهارت‌های مدیریتی.</p>
       </div>
       <div class="footer__col">
@@ -369,6 +534,7 @@
         <ul>
           <li><a href="index.html#about">درباره ما</a></li>
           <li><a href="index.html#contact">تماس با ما</a></li>
+          <li><a href="index.html#faq">پرسش‌های متداول</a></li>
           <li><a href="mailto:info@tara-academy.ir">info@tara-academy.ir</a></li>
           <li><a href="tel:+982100000000">۰۲۱-۰۰۰۰۰۰۰۰</a></li>
         </ul>
@@ -386,5 +552,7 @@
 </footer>
 
 <script src="assets/js/main.js"></script>
+<script src="assets/js/form-utils.js"></script>
+<script src="assets/js/consultation.js"></script>
 </body>
 </html>

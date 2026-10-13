@@ -112,6 +112,8 @@ button, input, select, textarea { font-family: inherit; font-size: inherit; }
   margin-bottom: var(--space-4);
 }
 
+[hidden] { display: none !important; }
+
 .sr-only {
   position: absolute;
   width: 1px; height: 1px;

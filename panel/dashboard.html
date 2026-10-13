@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>داشبورد | پنل سرپرست تارا</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/variables.css">
+<link rel="stylesheet" href="../assets/css/base.css">
+<link rel="stylesheet" href="../assets/css/components.css">
+</head>
+<body data-page="dashboard">
+
+<header class="site-header">
+  <div class="container site-header__inner">
+    <a href="dashboard.html" class="brand">
+      <img class="brand__logo" src="../assets/img/optimized/logo-mark.webp" alt="" width="60" height="44">
+      پنل سرپرست
+    </a>
+    <nav class="nav panel-nav" aria-label="پنل">
+      <ul class="nav__links">
+        <li><a href="dashboard.html" aria-current="page">داشبورد</a></li>
+        <li><a href="index.html">درخواست‌ها</a></li>
+        <li data-admin-only hidden><a href="supervisors.html">سرپرستان</a></li>
+        <li><a href="account.html">حساب من</a></li>
+        <li class="panel-nav__logout"><button class="btn btn--secondary btn--sm" type="button" data-logout>خروج</button></li>
+      </ul>
+      <span class="panel-header__user" data-user-name></span>
+      <button class="theme-toggle" type="button" aria-pressed="false" aria-label="تغییر پوسته"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><path d="M18 2L18.6178 3.23558C18.8833 3.76656 19.016 4.03205 19.1934 4.26211C19.3507 4.46626 19.5337 4.64927 19.7379 4.80664C19.9679 4.98397 20.2334 5.11672 20.7644 5.38221L22 6L20.7644 6.61779C20.2334 6.88328 19.9679 7.01603 19.7379 7.19336C19.5337 7.35073 19.3507 7.53374 19.1934 7.73789C19.016 7.96795 18.8833 8.23344 18.6178 8.76442L18 10L17.3822 8.76442C17.1167 8.23344 16.984 7.96795 16.8066 7.73789C16.6493 7.53374 16.4663 7.35073 16.2621 7.19336C16.0321 7.01603 15.7666 6.88328 15.2356 6.61779L14 6L15.2356 5.38221C15.7666 5.11672 16.0321 4.98397 16.2621 4.80664C16.4663 4.64927 16.6493 4.46626 16.8066 4.26211C16.984 4.03205 17.1167 3.76656 17.3822 3.23558L18 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M21 13.3893C19.689 15.689 17.2145 17.2395 14.3779 17.2395C10.1711 17.2395 6.76075 13.8292 6.76075 9.62233C6.76075 6.78554 8.31149 4.31094 10.6115 3C5.77979 3.45812 2 7.52692 2 12.4785C2 17.7371 6.26292 22 11.5215 22C16.4729 22 20.5415 18.2206 21 13.3893Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <button class="nav__toggle" type="button" aria-expanded="false" aria-label="باز کردن منو">☰</button>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <div class="page-hero page-hero--panel">
+    <div class="container">
+      <h1 style="margin-bottom:var(--space-2);">داشبورد</h1>
+      <p class="text-muted" style="margin:0;">نمای کلی درخواست‌های دوره و مشاوره.</p>
+    </div>
+  </div>
+
+  <section class="section">
+    <div class="container">
+      <p class="form-alert" id="dashboard-alert" role="alert" hidden>دریافت آمار ناموفق بود.</p>
+
+      <div class="kpi-grid" id="kpis" aria-live="polite">
+        <a class="kpi" href="index.html?status=new">
+          <span class="kpi__label">درخواست‌های جدید</span>
+          <span class="kpi__value" data-kpi="new">—</span>
+          <span class="kpi__meta">منتظر اولین پیگیری</span>
+        </a>
+        <a class="kpi" href="index.html?status=in_progress">
+          <span class="kpi__label">در حال بررسی</span>
+          <span class="kpi__value" data-kpi="in_progress">—</span>
+          <span class="kpi__meta" data-kpi-meta="done">—</span>
+        </a>
+        <div class="kpi">
+          <span class="kpi__label">۷ روز گذشته</span>
+          <span class="kpi__value" data-kpi="week">—</span>
+          <span class="kpi__meta" data-kpi-meta="week">—</span>
+        </div>
+        <div class="kpi">
+          <span class="kpi__label">میانه زمان تا اولین پیگیری</span>
+          <span class="kpi__value kpi__value--text" data-kpi="pickup">—</span>
+          <span class="kpi__meta" data-kpi-meta="pickup">—</span>
+        </div>
+        <a class="kpi" href="index.html?assigned=none">
+          <span class="kpi__label">باز و بدون مسئول</span>
+          <span class="kpi__value" data-kpi="unassigned">—</span>
+          <span class="kpi__meta" data-kpi-meta="kind">—</span>
+        </a>
+      </div>
+
+      <div class="chart-grid">
+        <section class="chart-card" aria-labelledby="daily-title">
+          <div class="chart-card__head">
+            <div>
+              <h2 class="chart-card__title" id="daily-title">درخواست‌ها در ۳۰ روز گذشته</h2>
+              <p class="chart-card__sub">تعداد درخواست‌های ثبت‌شده در هر روز (دوره و مشاوره)</p>
+            </div>
+            <button class="btn btn--ghost btn--sm" type="button" data-table-toggle="daily-table" aria-expanded="false">نمایش جدول</button>
+          </div>
+          <div class="chart" id="daily-chart"></div>
+          <div class="chart-table" id="daily-table" hidden></div>
+        </section>
+
+        <section class="chart-card" aria-labelledby="course-title">
+          <div class="chart-card__head">
+            <div>
+              <h2 class="chart-card__title" id="course-title">درخواست به تفکیک دوره</h2>
+              <p class="chart-card__sub">همه درخواست‌های دوره از ابتدا</p>
+            </div>
+          </div>
+          <div class="bar-list" id="course-chart"></div>
+        </section>
+      </div>
+    </div>
+  </section>
+</main>
+<div class="chart-tooltip" id="chart-tooltip" role="status" hidden></div>
+
+<script src="../assets/js/main.js"></script>
+<script src="../assets/js/panel.js"></script>
+</body>
+</html>

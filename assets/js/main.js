@@ -22,6 +22,9 @@
   var themeBtn = document.querySelector(".theme-toggle");
   var root = document.documentElement;
   var STORAGE_KEY = "tara-theme";
+  // Moon in light mode (switch to dark), sun in dark mode (switch to light)
+  var MOON_ICON = '<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><path d="M18 2L18.6178 3.23558C18.8833 3.76656 19.016 4.03205 19.1934 4.26211C19.3507 4.46626 19.5337 4.64927 19.7379 4.80664C19.9679 4.98397 20.2334 5.11672 20.7644 5.38221L22 6L20.7644 6.61779C20.2334 6.88328 19.9679 7.01603 19.7379 7.19336C19.5337 7.35073 19.3507 7.53374 19.1934 7.73789C19.016 7.96795 18.8833 8.23344 18.6178 8.76442L18 10L17.3822 8.76442C17.1167 8.23344 16.984 7.96795 16.8066 7.73789C16.6493 7.53374 16.4663 7.35073 16.2621 7.19336C16.0321 7.01603 15.7666 6.88328 15.2356 6.61779L14 6L15.2356 5.38221C15.7666 5.11672 16.0321 4.98397 16.2621 4.80664C16.4663 4.64927 16.6493 4.46626 16.8066 4.26211C16.984 4.03205 17.1167 3.76656 17.3822 3.23558L18 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M21 13.3893C19.689 15.689 17.2145 17.2395 14.3779 17.2395C10.1711 17.2395 6.76075 13.8292 6.76075 9.62233C6.76075 6.78554 8.31149 4.31094 10.6115 3C5.77979 3.45812 2 7.52692 2 12.4785C2 17.7371 6.26292 22 11.5215 22C16.4729 22 20.5415 18.2206 21 13.3893Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  var SUN_ICON = '<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 2V4M12 20V22M4.93 4.93L6.34 6.34M17.66 17.66L19.07 19.07M2 12H4M20 12H22M4.93 19.07L6.34 17.66M17.66 6.34L19.07 4.93" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 
   function applyTheme(theme) {
     if (theme === "dark") {
@@ -31,7 +34,7 @@
     }
     if (themeBtn) {
       themeBtn.setAttribute("aria-pressed", String(theme === "dark"));
-      themeBtn.textContent = theme === "dark" ? "☀️" : "🌙";
+      themeBtn.innerHTML = theme === "dark" ? SUN_ICON : MOON_ICON;
     }
   }
 
@@ -47,6 +50,196 @@
       applyTheme(next);
       try { localStorage.setItem(STORAGE_KEY, next); } catch (e) {}
     });
+  }
+
+  // Hero slider
+  var slider = document.querySelector("[data-slider]");
+  if (slider) {
+    var slides = slider.querySelectorAll(".hero-slider__slide");
+    var dotsWrap = slider.querySelector("[data-slider-dots]");
+    var rtl = getComputedStyle(slider).direction === "rtl";
+    var INTERVAL = 5000;
+    var current = 0;
+    var timer = null;
+    var dots = [];
+
+    // Images after the first carry data-src and load just before they're shown
+    function loadSlide(index) {
+      var img = slides[index].querySelector("img[data-src]");
+      if (img) {
+        img.src = img.getAttribute("data-src");
+        img.removeAttribute("data-src");
+      }
+    }
+
+    function goTo(index) {
+      index = (index + slides.length) % slides.length;
+      loadSlide(index);
+      slides.forEach(function (slide, i) {
+        var active = i === index;
+        slide.classList.toggle("is-active", active);
+        if (active) {
+          slide.removeAttribute("aria-hidden");
+          slide.inert = false;
+        } else {
+          slide.setAttribute("aria-hidden", "true");
+          slide.inert = true;
+        }
+      });
+      dots.forEach(function (dot, i) {
+        dot.setAttribute("aria-current", String(i === index));
+      });
+      current = index;
+      loadSlide((index + 1) % slides.length);
+    }
+
+    // Wait for the next photo to finish loading so it never fades in half-empty
+    function advance() {
+      var next = (current + 1) % slides.length;
+      var img = slides[next].querySelector("img");
+      loadSlide(next);
+      if (img.complete) {
+        goTo(next);
+      } else {
+        stop();
+        var from = current;
+        var proceed = function () {
+          if (current === from) { go(next); } // skip if a dot was clicked meanwhile
+        };
+        img.addEventListener("load", proceed, { once: true });
+        img.addEventListener("error", proceed, { once: true });
+      }
+    }
+
+    function stop() { clearInterval(timer); timer = null; }
+    // Autoplay always runs; it only pauses while the tab is in the background
+    function start() {
+      stop();
+      if (!document.hidden) {
+        timer = setInterval(advance, INTERVAL);
+      }
+    }
+    // Choosing a slide restarts the countdown so the next one doesn't jump in early
+    function go(index) { goTo(index); start(); }
+
+    slides.forEach(function (_, i) {
+      var dot = document.createElement("button");
+      dot.type = "button";
+      dot.className = "hero-slider__dot";
+      dot.setAttribute("aria-label", slides[i].getAttribute("aria-label"));
+      dot.addEventListener("click", function () { go(i); });
+      dotsWrap.appendChild(dot);
+      dots.push(dot);
+    });
+
+    slider.querySelector("[data-slider-prev]").addEventListener("click", function () { go(current - 1); });
+    slider.querySelector("[data-slider-next]").addEventListener("click", function () { go(current + 1); });
+
+    // In RTL the next slide sits to the left
+    slider.addEventListener("keydown", function (event) {
+      if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") { return; }
+      var forward = (event.key === "ArrowLeft") === rtl;
+      go(current + (forward ? 1 : -1));
+      event.preventDefault();
+    });
+
+    var touchX = null;
+    slider.addEventListener("touchstart", function (event) {
+      touchX = event.touches[0].clientX;
+    }, { passive: true });
+    slider.addEventListener("touchend", function (event) {
+      if (touchX === null) { return; }
+      var dx = event.changedTouches[0].clientX - touchX;
+      touchX = null;
+      if (Math.abs(dx) < 40) { return; }
+      var forward = rtl ? dx > 0 : dx < 0;
+      go(current + (forward ? 1 : -1));
+    });
+
+    document.addEventListener("visibilitychange", start);
+
+    goTo(0);
+    start();
+  }
+
+  // Homepage course search & filters
+  var courseGrid = document.getElementById("course-grid");
+  if (courseGrid) {
+    var cards = courseGrid.querySelectorAll(".course-card");
+    var searchInput = document.getElementById("course-search");
+    var instructorSelect = document.getElementById("course-instructor");
+    var categoryTabs = document.querySelectorAll(".course-filters [data-category]");
+    var emptyState = document.getElementById("course-empty");
+    var filterStatus = document.getElementById("course-filter-status");
+    var category = "";
+    var faDigits = new Intl.NumberFormat("fa-IR");
+
+    // Match regardless of ی/ي, ک/ك and zero-width non-joiners
+    function normalizeText(text) {
+      return text.toLowerCase().replace(/ي/g, "ی").replace(/ك/g, "ک").replace(/\u200c/g, " ").replace(/\s+/g, " ").trim();
+    }
+
+    function applyFilters() {
+      var query = normalizeText(searchInput.value);
+      var instructor = instructorSelect.value;
+      var shown = 0;
+      cards.forEach(function (card) {
+        var text = normalizeText(card.querySelector(".course-card__title").textContent + " " +
+          card.querySelector(".course-card__desc").textContent);
+        var match = (!category || card.getAttribute("data-category") === category) &&
+          (!instructor || card.getAttribute("data-instructors").split(" ").indexOf(instructor) !== -1) &&
+          (!query || text.indexOf(query) !== -1);
+        card.hidden = !match;
+        if (match) { shown += 1; }
+      });
+      emptyState.hidden = shown > 0;
+      var filtered = query || instructor || category;
+      filterStatus.textContent = filtered ? faDigits.format(shown) + " دوره از " + faDigits.format(cards.length) + " دوره" : "";
+    }
+
+    categoryTabs.forEach(function (tab) {
+      tab.addEventListener("click", function () {
+        categoryTabs.forEach(function (t) { t.setAttribute("aria-pressed", String(t === tab)); });
+        category = tab.getAttribute("data-category");
+        applyFilters();
+      });
+    });
+    searchInput.addEventListener("input", applyFilters);
+    instructorSelect.addEventListener("change", applyFilters);
+    document.getElementById("course-filters-reset").addEventListener("click", function () {
+      searchInput.value = "";
+      instructorSelect.value = "";
+      categoryTabs[0].click();
+    });
+  }
+
+  // Hero stats count up once they scroll into view (final values are already in the HTML)
+  var counters = document.querySelectorAll("[data-count-to]");
+  var prefersReduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (counters.length && "IntersectionObserver" in window && !prefersReduced) {
+    var counterFormat = new Intl.NumberFormat("fa-IR", { useGrouping: false });
+    var countUp = function (node) {
+      var target = Number(node.getAttribute("data-count-to"));
+      var startTime = null;
+      var DURATION = 1200;
+      var step = function (now) {
+        if (startTime === null) { startTime = now; }
+        var progress = Math.min(1, (now - startTime) / DURATION);
+        var eased = 1 - Math.pow(1 - progress, 3); // ease-out
+        node.textContent = "+" + counterFormat.format(Math.round(target * eased));
+        if (progress < 1) { window.requestAnimationFrame(step); }
+      };
+      window.requestAnimationFrame(step);
+    };
+    var counterObserver = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          counterObserver.unobserve(entry.target);
+          countUp(entry.target);
+        }
+      });
+    }, { threshold: 0.6 });
+    counters.forEach(function (node) { counterObserver.observe(node); });
   }
 
   // Footer year

@@ -18,16 +18,20 @@
     "leadership-skills": { title: "مهارت‌های رهبری سازمانی", instructors: ["mina-ahmadi"] }
   };
 
-  var PHONE_PATTERN = /^(\+98|0098|0)9\d{9}$/;
+  var F = window.TaraForm;
 
   var form = document.getElementById("course-request-form");
   var success = document.getElementById("course-request-success");
   if (!form || !success) { return; }
 
+  var firstNameInput = form.elements.first_name;
+  var lastNameInput = form.elements.last_name;
+  var nationalIdInput = form.elements.national_id;
   var courseSelect = form.elements.course;
   var instructorSelect = form.elements.instructor;
   var phoneInput = form.elements.phone;
   var messageInput = form.elements.message;
+  var alertBox = document.getElementById("course-request-alert");
 
   function addOption(select, value, label) {
     var option = document.createElement("option");
@@ -36,20 +40,14 @@
     select.appendChild(option);
   }
 
-  // Persian (۰-۹) and Arabic (٠-٩) digits → Latin, strip spaces and dashes
-  function normalizePhone(value) {
-    return value
-      .replace(/[۰-۹]/g, function (d) { return String(d.charCodeAt(0) - 0x06F0); })
-      .replace(/[٠-٩]/g, function (d) { return String(d.charCodeAt(0) - 0x0660); })
-      .replace(/[\s\-()]/g, "");
-  }
-
-  function setInvalid(field, invalid) {
-    if (invalid) {
-      field.setAttribute("aria-invalid", "true");
-    } else {
-      field.removeAttribute("aria-invalid");
-    }
+  // Iranian national ID (کد ملی): 10 digits, last one is a mod-11 check digit
+  function isValidNationalId(id) {
+    if (!/^\d{10}$/.test(id) || /^(\d)\1{9}$/.test(id)) { return false; }
+    var sum = 0;
+    for (var i = 0; i < 9; i++) { sum += Number(id.charAt(i)) * (10 - i); }
+    var remainder = sum % 11;
+    var check = Number(id.charAt(9));
+    return remainder < 2 ? check === remainder : check === 11 - remainder;
   }
 
   function renderInstructors() {
@@ -82,51 +80,56 @@
   renderInstructors();
 
   courseSelect.addEventListener("change", function () {
-    setInvalid(courseSelect, false);
-    setInvalid(instructorSelect, false);
+    F.setInvalid(courseSelect, false);
+    F.setInvalid(instructorSelect, false);
     renderInstructors();
   });
 
-  [instructorSelect, phoneInput, messageInput].forEach(function (field) {
-    var eventName = field.tagName === "SELECT" ? "change" : "input";
-    field.addEventListener(eventName, function () { setInvalid(field, false); });
-  });
+  F.clearOnEdit([firstNameInput, lastNameInput, nationalIdInput, instructorSelect, phoneInput, messageInput]);
 
   form.addEventListener("submit", function (event) {
     event.preventDefault();
 
-    var phone = normalizePhone(phoneInput.value);
+    var firstName = firstNameInput.value.trim();
+    var lastName = lastNameInput.value.trim();
+    var nationalId = F.normalizeDigits(nationalIdInput.value);
+    var phone = F.normalizeDigits(phoneInput.value);
     var message = messageInput.value.trim();
-    var checks = [
+
+    var valid = F.applyChecks([
+      [firstNameInput, !F.isValidName(firstName)],
+      [lastNameInput, !F.isValidName(lastName)],
+      [nationalIdInput, !isValidNationalId(nationalId)],
       [courseSelect, !COURSES[courseSelect.value]],
       [instructorSelect, !instructorSelect.value],
-      [phoneInput, !PHONE_PATTERN.test(phone)],
+      [phoneInput, !F.isValidPhone(phone)],
       [messageInput, message.length < 10]
-    ];
-
-    var firstInvalid = null;
-    checks.forEach(function (check) {
-      setInvalid(check[0], check[1]);
-      if (check[1] && !firstInvalid) { firstInvalid = check[0]; }
-    });
-
-    if (firstInvalid) {
-      firstInvalid.focus();
-      return;
-    }
+    ]);
+    if (!valid) { return; }
 
     var request = {
+      first_name: firstName,
+      last_name: lastName,
+      national_id: nationalId,
       course: courseSelect.value,
       instructor: instructorSelect.value,
       phone: phone,
-      message: message
+      message: message,
+      website: form.elements.website.value
     };
-    // TODO: send `request` to a backend or form service
 
-    success.querySelector("[data-success-course]").textContent = COURSES[request.course].title;
-    success.querySelector("[data-success-instructor]").textContent = INSTRUCTORS[request.instructor];
-    form.hidden = true;
-    success.hidden = false;
-    success.focus();
+    F.submit({
+      form: form,
+      alert: alertBox,
+      url: "/api/tickets",
+      data: request,
+      onSuccess: function () {
+        success.querySelector("[data-success-course]").textContent = COURSES[request.course].title;
+        success.querySelector("[data-success-instructor]").textContent = INSTRUCTORS[request.instructor];
+        form.hidden = true;
+        success.hidden = false;
+        success.focus();
+      }
+    });
   });
 })();

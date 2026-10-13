@@ -52,6 +52,7 @@
   --accent-subtle:  var(--color-primary-50);
   --accent-2:       var(--color-teal-500);
   --accent-2-subtle: oklch(94% 0.035 195);
+  --danger:         var(--color-danger);
 
   /* ---------- Spacing Scale ---------- */
   --space-1:  4px;
@@ -118,6 +119,7 @@
   --accent-subtle:  oklch(22% 0.030 250);
   --accent-2:       oklch(66% 0.095 195);
   --accent-2-subtle: oklch(24% 0.045 195);
+  --danger:         oklch(70% 0.150 25);
 
   --shadow-sm:
     0 1px 2px oklch(4% 0 0 / 0.40),

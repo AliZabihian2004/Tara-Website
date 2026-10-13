@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>درخواست دوره | آکادمی تارا</title>
+<meta name="description" content="دوره و مدرس مورد نظر خود را انتخاب کنید و درخواست برگزاری دوره را برای آکادمی تارا ثبت کنید.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/variables.css">
+<link rel="stylesheet" href="assets/css/base.css">
+<link rel="stylesheet" href="assets/css/components.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="container site-header__inner">
+    <a href="index.html" class="brand">
+      <span class="brand__mark">ت</span>
+      آکادمی تارا
+    </a>
+    <nav class="nav">
+      <ul class="nav__links">
+        <li><a href="index.html">خانه</a></li>
+        <li><a href="index.html#courses">دوره‌ها</a></li>
+        <li><a href="index.html#instructors">مدرسان</a></li>
+        <li><a href="index.html#about">درباره ما</a></li>
+        <li><a href="index.html#contact">تماس با ما</a></li>
+      </ul>
+      <button class="theme-toggle" type="button" aria-pressed="false" aria-label="تغییر پوسته">🌙</button>
+      <button class="nav__toggle" type="button" aria-expanded="false" aria-label="باز کردن منو">☰</button>
+      <a href="index.html#courses" class="btn btn--primary nav__cta">مشاوره رایگان</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <div class="page-hero">
+    <div class="container">
+      <nav class="breadcrumb" aria-label="مسیر">
+        <a href="index.html">خانه</a>
+        <span class="breadcrumb__sep">/</span>
+        <span>درخواست دوره</span>
+      </nav>
+      <h1>درخواست دوره</h1>
+      <p style="color:var(--text-muted); font-size:var(--text-lg); margin:0; line-height:var(--leading-loose); max-width:55ch;">
+        دوره و مدرس مورد نظر خود را انتخاب کنید و نیاز تیم‌تان را برای ما بنویسید. کارشناسان تارا به‌زودی با شما تماس می‌گیرند.
+      </p>
+    </div>
+  </div>
+
+  <section class="section">
+    <div class="container" style="max-width:688px;">
+      <div class="info-card">
+        <form class="form" id="course-request-form" novalidate>
+          <div class="form-field">
+            <label class="form-label" for="course">دوره</label>
+            <select class="form-control" id="course" name="course" required aria-describedby="course-error">
+              <option value="">انتخاب دوره</option>
+            </select>
+            <p class="form-error" id="course-error">لطفاً یک دوره انتخاب کنید.</p>
+          </div>
+
+          <div class="form-field">
+            <label class="form-label" for="instructor">مدرس</label>
+            <select class="form-control" id="instructor" name="instructor" required disabled aria-describedby="instructor-error">
+              <option value="">ابتدا دوره را انتخاب کنید</option>
+            </select>
+            <p class="form-error" id="instructor-error">لطفاً مدرس دوره را انتخاب کنید.</p>
+          </div>
+
+          <div class="form-field">
+            <label class="form-label" for="phone">شماره تماس</label>
+            <input class="form-control" id="phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" dir="ltr" placeholder="09123456789" required aria-describedby="phone-hint phone-error">
+            <p class="form-hint" id="phone-hint">شماره موبایل با ۰۹ یا <bdi dir="ltr">+98</bdi> شروع شود.</p>
+            <p class="form-error" id="phone-error">لطفاً یک شماره موبایل معتبر وارد کنید.</p>
+          </div>
+
+          <div class="form-field">
+            <label class="form-label" for="message">توضیحات</label>
+            <textarea class="form-control" id="message" name="message" rows="5" required placeholder="توضیح دهید چه نیازی دارید؛ مثلاً تعداد شرکت‌کنندگان، زمان مورد نظر یا موضوعات خاص…" aria-describedby="message-error"></textarea>
+            <p class="form-error" id="message-error">لطفاً دست‌کم ۱۰ کاراکتر درباره نیاز خود بنویسید.</p>
+          </div>
+
+          <button type="submit" class="btn btn--primary btn--block">ثبت درخواست</button>
+        </form>
+
+        <div class="form-success" id="course-request-success" role="status" tabindex="-1" hidden>
+          <div class="form-success__icon">✓</div>
+          <h2 style="font-size:var(--text-xl); margin-bottom:var(--space-2);">درخواست شما ثبت شد</h2>
+          <p>درخواست شما برای دوره «<strong data-success-course></strong>» با تدریس <strong data-success-instructor></strong> ثبت شد. به‌زودی با شما تماس می‌گیریم.</p>
+          <a href="index.html" class="btn btn--secondary" style="margin-top:var(--space-6);">بازگشت به خانه</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer__grid">
+      <div class="footer__brand">
+        <a href="index.html" class="brand"><span class="brand__mark">ت</span>آکادمی تارا</a>
+        <p>ارائه‌دهنده دوره‌های آموزش سازمانی تخصصی در حوزه حسابداری، هوش مصنوعی و توسعه مهارت‌های مدیریتی.</p>
+      </div>
+      <div class="footer__col">
+        <h4>دوره‌ها</h4>
+        <ul>
+          <li><a href="courses/ai-for-managers.html">هوش مصنوعی برای مدیران</a></li>
+          <li><a href="courses/managerial-accounting.html">حسابداری مدیریتی</a></li>
+          <li><a href="courses/financial-analysis.html">تحلیل مالی پیشرفته</a></li>
+          <li><a href="courses/leadership-skills.html">مهارت‌های رهبری</a></li>
+        </ul>
+      </div>
+      <div class="footer__col">
+        <h4>مدرسان</h4>
+        <ul>
+          <li><a href="instructors/sara-moradi.html">سارا مرادی</a></li>
+          <li><a href="instructors/hossein-karimi.html">حسین کریمی</a></li>
+          <li><a href="instructors/mina-ahmadi.html">مینا احمدی</a></li>
+          <li><a href="instructors/reza-fallahi.html">رضا فلاحی</a></li>
+        </ul>
+      </div>
+      <div class="footer__col">
+        <h4>سازمان</h4>
+        <ul>
+          <li><a href="index.html#about">درباره ما</a></li>
+          <li><a href="index.html#contact">تماس با ما</a></li>
+          <li><a href="mailto:info@tara-academy.ir">info@tara-academy.ir</a></li>
+          <li><a href="tel:+982100000000">۰۲۱-۰۰۰۰۰۰۰۰</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer__bottom">
+      <span>© <span data-year></span> آکادمی تارا. تمامی حقوق محفوظ است.</span>
+      <div class="social-links">
+        <a href="#" aria-label="اینستاگرام">📷</a>
+        <a href="#" aria-label="لینکدین">in</a>
+        <a href="#" aria-label="تلگرام">✈</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/js/main.js"></script>
+<script src="assets/js/course-request.js"></script>
+</body>
+</html>

@@ -546,8 +546,9 @@
 
         var link = document.createElement("a");
         link.href = href;
-        link.textContent = "#" + formatNumber(ticket.id);
-        cell(row, "شماره", link);
+        link.dir = "ltr";
+        link.textContent = ticket.tracking_code;
+        cell(row, "کد پیگیری", link);
         cell(row, "تاریخ", formatDate(ticket.created_at));
         cell(row, "متقاضی", fullName(ticket));
         cell(row, "موضوع", subject(ticket));
@@ -635,7 +636,7 @@
     function field(name) { return document.querySelector('[data-field="' + name + '"]'); }
 
     function render(ticket) {
-      var title = "درخواست #" + formatNumber(ticket.id);
+      var title = "درخواست " + ticket.tracking_code;
       document.title = title + " | پنل سرپرست تارا";
       document.querySelector("[data-ticket-title]").textContent = title;
       document.querySelector("[data-ticket-crumb]").textContent = title;

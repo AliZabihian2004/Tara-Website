@@ -82,6 +82,12 @@
                 <p class="form-error" id="phone-error">لطفاً یک شماره موبایل معتبر وارد کنید.</p>
               </div>
             </div>
+
+            <div class="form-field">
+              <label class="form-label" for="company">نام سازمان <span class="text-muted" style="font-weight:400;">(اختیاری)</span></label>
+              <input class="form-control" id="company" name="company" type="text" autocomplete="organization" maxlength="100" aria-describedby="company-error">
+              <p class="form-error" id="company-error">نام سازمان حداکثر ۱۰۰ کاراکتر است.</p>
+            </div>
           </fieldset>
 
           <fieldset class="request-step" data-step>
@@ -130,6 +136,7 @@
           </div>
           <h2 class="form-success__title">درخواست شما ثبت شد</h2>
           <p>درخواست شما برای دوره «<strong data-success-course></strong>» با تدریس <strong data-success-instructor></strong> ثبت شد. به‌زودی با شما تماس می‌گیریم.</p>
+          <p style="margin-top:var(--space-2);">کد پیگیری شما: <strong dir="ltr" data-success-code></strong></p>
           <a href="index.html" class="btn btn--secondary form-success__action">بازگشت به خانه</a>
         </div>
       </div>

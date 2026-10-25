@@ -46,12 +46,15 @@ window.TaraForm = (function () {
   }
 
   /* POST JSON and drive the shared submit states:
-     201 → onSuccess(responseJson); 422 → mark the fields the server rejected; anything else → show the alert. */
+     201 → onSuccess(responseJson); 422 → mark the fields the server rejected;
+     429 → say when to try again; anything else → show the alert. */
   function submit(options) {
     var form = options.form;
     var button = form.querySelector("[type=submit]");
     var label = button.textContent;
 
+    // The alert's own text is the generic error; remember it since a 429 replaces it
+    if (!options.alert.dataset.text) { options.alert.dataset.text = options.alert.textContent; }
     options.alert.hidden = true;
     button.disabled = true;
     button.classList.add("is-loading");
@@ -75,9 +78,17 @@ window.TaraForm = (function () {
             if (names.length && form.elements[names[0]]) { form.elements[names[0]].focus(); }
           });
         }
+        if (res.status === 429) {
+          var minutes = Math.max(1, Math.ceil(Number(res.headers.get("Retry-After")) / 60)) || 60;
+          options.alert.textContent = "تعداد درخواست‌های ارسالی از این دستگاه بیش از حد مجاز است؛ لطفاً حدود " +
+            minutes.toLocaleString("fa-IR") + " دقیقه دیگر دوباره تلاش کنید.";
+          options.alert.hidden = false;
+          return;
+        }
         throw new Error("HTTP " + res.status);
       })
       .catch(function () {
+        options.alert.textContent = options.alert.dataset.text;
         options.alert.hidden = false;
       })
       .then(function () {

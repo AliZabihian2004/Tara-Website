@@ -79,3 +79,11 @@ CREATE OR REPLACE FUNCTION tara_tracking_code() RETURNS text LANGUAGE sql VOLATI
 $$;
 ALTER TABLE tickets ADD COLUMN IF NOT EXISTS tracking_code text NOT NULL DEFAULT tara_tracking_code();
 CREATE UNIQUE INDEX IF NOT EXISTS tickets_tracking_code_idx ON tickets (tracking_code);
+
+-- Public form submissions per IP, for rate limiting; rows older than an hour are pruned on insert
+CREATE TABLE IF NOT EXISTS form_submissions (
+  ip         inet NOT NULL,
+  form       text NOT NULL CHECK (form IN ('course_request', 'consultation')),
+  created_at timestamptz NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS form_submissions_ip_idx ON form_submissions (ip, form, created_at);

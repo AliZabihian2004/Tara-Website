@@ -24,6 +24,9 @@ USERNAME_PATTERN = re.compile(r"^[a-z0-9._-]{3,32}$")
 # Persian (۰-۹) and Arabic (٠-٩) digits → Latin
 DIGITS = str.maketrans("۰۱۲۳۴۵۶۷۸۹٠١٢٣٤٥٦٧٨٩", "01234567890123456789")
 PAGE_SIZE = 20
+# Public form submissions allowed per IP and form within the window
+RATE_LIMIT = 5
+RATE_WINDOW_SECONDS = 3600
 STATUSES = ("new", "in_progress", "done")
 TEHRAN = ZoneInfo("Asia/Tehran")
 
@@ -86,6 +89,29 @@ def _honeypot_response() -> dict:
         return {"id": 0, "tracking_code": conn.execute("SELECT tara_tracking_code() AS code").fetchone()["code"]}
 
 
+def _rate_limited(request: Request, form: str) -> JSONResponse | None:
+    """Count this submission against the IP's limit for the form; a 429 response if it is over."""
+    ip = request.client.host
+    with pool.connection() as conn, conn.transaction():
+        # Serialise per IP and form so two simultaneous submissions can't both take the last slot
+        conn.execute("SELECT pg_advisory_xact_lock(hashtext(%s))", (f"{form}:{ip}",))
+        conn.execute(
+            "DELETE FROM form_submissions WHERE created_at < now() - make_interval(secs => %s)", (RATE_WINDOW_SECONDS,)
+        )
+        row = conn.execute(
+            """SELECT count(*) AS n, extract(epoch FROM min(created_at) + make_interval(secs => %s) - now()) AS wait
+               FROM form_submissions WHERE ip = %s AND form = %s""",
+            (RATE_WINDOW_SECONDS, ip, form),
+        ).fetchone()
+        if row["n"] >= RATE_LIMIT:
+            # Retry-After: seconds until the oldest counted submission leaves the window
+            return JSONResponse(
+                {"error": "rate_limited"}, status_code=429, headers={"Retry-After": str(int(row["wait"]) + 1)}
+            )
+        conn.execute("INSERT INTO form_submissions (ip, form) VALUES (%s, %s)", (ip, form))
+    return None
+
+
 class TicketIn(BaseModel):
     first_name: str = ""
     last_name: str = ""
@@ -99,9 +125,9 @@ class TicketIn(BaseModel):
 
 
 @app.post("/api/tickets", status_code=201)
-def create_ticket(body: TicketIn):
+def create_ticket(body: TicketIn, request: Request):
     if body.website:
-        return _honeypot_response()
+        return _rate_limited(request, "course_request") or _honeypot_response()
 
     first_name = body.first_name.strip()
     last_name = body.last_name.strip()
@@ -130,6 +156,9 @@ def create_ticket(body: TicketIn):
         errors["message"] = "invalid"
     if errors:
         return JSONResponse({"errors": errors}, status_code=422)
+    # Only submissions that pass validation count against the limit
+    if limited := _rate_limited(request, "course_request"):
+        return limited
 
     with pool.connection() as conn:
         row = conn.execute(
@@ -151,9 +180,9 @@ class ConsultationIn(BaseModel):
 
 
 @app.post("/api/consultations", status_code=201)
-def create_consultation(body: ConsultationIn):
+def create_consultation(body: ConsultationIn, request: Request):
     if body.website:
-        return _honeypot_response()
+        return _rate_limited(request, "consultation") or _honeypot_response()
 
     name = body.name.strip()
     phone = normalize_digits(body.phone)
@@ -171,6 +200,8 @@ def create_consultation(body: ConsultationIn):
         errors["message"] = "invalid"
     if errors:
         return JSONResponse({"errors": errors}, status_code=422)
+    if limited := _rate_limited(request, "consultation"):
+        return limited
 
     # Consultations have no course; the full name goes in first_name
     with pool.connection() as conn:

@@ -36,6 +36,7 @@
   var firstNameInput = form.elements.first_name;
   var lastNameInput = form.elements.last_name;
   var nationalIdInput = form.elements.national_id;
+  var companyInput = form.elements.company;
   var courseSelect = form.elements.course;
   var instructorSelect = form.elements.instructor;
   var phoneInput = form.elements.phone;
@@ -157,7 +158,7 @@
     event.target.classList.remove("is-shaking");
   });
 
-  F.clearOnEdit([firstNameInput, lastNameInput, nationalIdInput, instructorSelect, phoneInput, messageInput]);
+  F.clearOnEdit([firstNameInput, lastNameInput, nationalIdInput, companyInput, instructorSelect, phoneInput, messageInput]);
 
   form.addEventListener("submit", function (event) {
     event.preventDefault();
@@ -165,6 +166,7 @@
     var firstName = firstNameInput.value.trim();
     var lastName = lastNameInput.value.trim();
     var nationalId = F.normalizeDigits(nationalIdInput.value);
+    var company = companyInput.value.trim();
     var phone = F.normalizeDigits(phoneInput.value);
     var message = messageInput.value.trim();
 
@@ -172,6 +174,7 @@
       [firstNameInput, !F.isValidName(firstName)],
       [lastNameInput, !F.isValidName(lastName)],
       [nationalIdInput, !isValidNationalId(nationalId)],
+      [companyInput, company.length > 100],
       [courseSelect, !COURSES[courseSelect.value]],
       [instructorSelect, !instructorSelect.value],
       [phoneInput, !F.isValidPhone(phone)],
@@ -188,6 +191,7 @@
       first_name: firstName,
       last_name: lastName,
       national_id: nationalId,
+      company: company,
       course: courseSelect.value,
       instructor: instructorSelect.value,
       phone: phone,
@@ -200,7 +204,8 @@
       alert: alertBox,
       url: "/api/tickets",
       data: request,
-      onSuccess: function () {
+      onSuccess: function (data) {
+        success.querySelector("[data-success-code]").textContent = data.tracking_code;
         success.querySelector("[data-success-course]").textContent = COURSES[request.course].title;
         success.querySelector("[data-success-instructor]").textContent = INSTRUCTORS[request.instructor];
         form.hidden = true;

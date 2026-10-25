@@ -31,7 +31,7 @@ Status = Literal["new", "in_progress", "done"]
 Kind = Literal["course_request", "consultation"]
 Role = Literal["admin", "supervisor"]
 
-TICKET_COLUMNS = """t.id, t.kind, t.first_name, t.last_name, t.national_id, t.company,
+TICKET_COLUMNS = """t.id, t.tracking_code, t.kind, t.first_name, t.last_name, t.national_id, t.company,
                     t.course_slug, t.course_title, t.instructor_slug, t.instructor_name,
                     t.phone, t.message, t.status, t.note, t.created_at, t.updated_at,
                     t.assigned_to, a.display_name AS assigned_name"""
@@ -80,10 +80,17 @@ def is_valid_name(name: str, max_length: int = 50) -> bool:
     return 2 <= len(name) <= max_length and not any(c.isdigit() for c in name)
 
 
+def _honeypot_response() -> dict:
+    # A real-looking code so bots can't tell they were caught; nothing is saved
+    with pool.connection() as conn:
+        return {"id": 0, "tracking_code": conn.execute("SELECT tara_tracking_code() AS code").fetchone()["code"]}
+
+
 class TicketIn(BaseModel):
     first_name: str = ""
     last_name: str = ""
     national_id: str = ""
+    company: str = ""
     course: str = ""
     instructor: str = ""
     phone: str = ""
@@ -94,11 +101,12 @@ class TicketIn(BaseModel):
 @app.post("/api/tickets", status_code=201)
 def create_ticket(body: TicketIn):
     if body.website:
-        return {"id": 0}
+        return _honeypot_response()
 
     first_name = body.first_name.strip()
     last_name = body.last_name.strip()
     national_id = normalize_digits(body.national_id)
+    company = body.company.strip()
     phone = normalize_digits(body.phone)
     message = body.message.strip()
     course = COURSES.get(body.course)
@@ -110,6 +118,8 @@ def create_ticket(body: TicketIn):
         errors["last_name"] = "invalid"
     if not is_valid_national_id(national_id):
         errors["national_id"] = "invalid"
+    if len(company) > 100:
+        errors["company"] = "invalid"
     if not course:
         errors["course"] = "invalid"
     if not course or body.instructor not in course["instructors"]:
@@ -123,13 +133,13 @@ def create_ticket(body: TicketIn):
 
     with pool.connection() as conn:
         row = conn.execute(
-            """INSERT INTO tickets (first_name, last_name, national_id, course_slug, course_title,
+            """INSERT INTO tickets (first_name, last_name, national_id, company, course_slug, course_title,
                                   instructor_slug, instructor_name, phone, message)
-               VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING id""",
-            (first_name, last_name, national_id, body.course, course["title"],
+               VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING id, tracking_code""",
+            (first_name, last_name, national_id, company, body.course, course["title"],
              body.instructor, INSTRUCTORS[body.instructor], phone, message),
         ).fetchone()
-    return {"id": row["id"]}
+    return {"id": row["id"], "tracking_code": row["tracking_code"]}
 
 
 class ConsultationIn(BaseModel):
@@ -143,7 +153,7 @@ class ConsultationIn(BaseModel):
 @app.post("/api/consultations", status_code=201)
 def create_consultation(body: ConsultationIn):
     if body.website:
-        return {"id": 0}
+        return _honeypot_response()
 
     name = body.name.strip()
     phone = normalize_digits(body.phone)
@@ -167,10 +177,10 @@ def create_consultation(body: ConsultationIn):
         row = conn.execute(
             """INSERT INTO tickets (kind, first_name, company, phone, message,
                                   course_slug, course_title, instructor_slug, instructor_name)
-               VALUES ('consultation', %s, %s, %s, %s, '', '', '', '') RETURNING id""",
+               VALUES ('consultation', %s, %s, %s, %s, '', '', '', '') RETURNING id, tracking_code""",
             (name, company, phone, message),
         ).fetchone()
-    return {"id": row["id"]}
+    return {"id": row["id"], "tracking_code": row["tracking_code"]}
 
 
 # ---------- Supervisor auth ----------
@@ -271,9 +281,9 @@ def _ticket_filters(supervisor: dict, kind=None, course=None, q=None, assigned=N
         params.append(int(assigned))
     if q and q.strip():
         term = "%" + q.strip().translate(DIGITS).replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_") + "%"
-        where.append("""(t.phone ILIKE %s OR t.message ILIKE %s OR t.national_id ILIKE %s OR t.company ILIKE %s
-                         OR (t.first_name || ' ' || t.last_name) ILIKE %s)""")
-        params += [term] * 5
+        where.append("""(t.tracking_code ILIKE %s OR t.phone ILIKE %s OR t.message ILIKE %s OR t.national_id ILIKE %s
+                         OR t.company ILIKE %s OR (t.first_name || ' ' || t.last_name) ILIKE %s)""")
+        params += [term] * 6
     return where, params
 
 
@@ -348,11 +358,12 @@ def export_tickets(
     out = io.StringIO()
     out.write("﻿")  # BOM so Excel reads the file as UTF-8
     writer = csv.writer(out)
-    writer.writerow(["شماره", "نوع", "تاریخ ثبت", "نام", "نام خانوادگی", "کد ملی", "سازمان", "تلفن",
+    writer.writerow(["شماره", "کد پیگیری", "نوع", "تاریخ ثبت", "نام", "نام خانوادگی", "کد ملی", "سازمان", "تلفن",
                      "دوره", "مدرس", "وضعیت", "مسئول", "توضیحات", "یادداشت داخلی"])
     for t in rows:
         writer.writerow([
             t["id"],
+            t["tracking_code"],
             KIND_LABELS[t["kind"]],
             t["created_at"].astimezone(TEHRAN).strftime("%Y-%m-%d %H:%M"),
             _csv_text(t["first_name"]),

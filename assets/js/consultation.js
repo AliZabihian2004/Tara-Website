@@ -36,7 +36,8 @@
       alert: alertBox,
       url: "/api/consultations",
       data: { name: name, phone: phone, company: company, message: message, website: form.elements.website.value },
-      onSuccess: function () {
+      onSuccess: function (data) {
+        success.querySelector("[data-success-code]").textContent = data.tracking_code;
         form.hidden = true;
         success.hidden = false;
         success.focus();

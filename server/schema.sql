@@ -70,3 +70,12 @@ CREATE TABLE IF NOT EXISTS course_sessions (
   title       text NOT NULL DEFAULT ''
 );
 CREATE INDEX IF NOT EXISTS course_sessions_course_idx ON course_sessions (course_slug, starts_at);
+
+-- کد پیگیری: TR- + 6 characters without look-alikes (0/O, 1/I).
+-- The volatile default also gives every existing row its own code when the column is added.
+CREATE OR REPLACE FUNCTION tara_tracking_code() RETURNS text LANGUAGE sql VOLATILE AS $$
+  SELECT 'TR-' || string_agg(substr('ABCDEFGHJKLMNPQRSTUVWXYZ23456789', 1 + floor(random() * 32)::int, 1), '')
+  FROM generate_series(1, 6)
+$$;
+ALTER TABLE tickets ADD COLUMN IF NOT EXISTS tracking_code text NOT NULL DEFAULT tara_tracking_code();
+CREATE UNIQUE INDEX IF NOT EXISTS tickets_tracking_code_idx ON tickets (tracking_code);

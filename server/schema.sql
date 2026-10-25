@@ -88,3 +88,13 @@ CREATE TABLE IF NOT EXISTS form_submissions (
   created_at timestamptz NOT NULL DEFAULT now()
 );
 CREATE INDEX IF NOT EXISTS form_submissions_ip_idx ON form_submissions (ip, form, created_at);
+
+-- Message supervisors write for the requester; shown on the public tracking page (track.html)
+ALTER TABLE tickets ADD COLUMN IF NOT EXISTS client_message text NOT NULL DEFAULT '';
+-- Allow the new values in the CHECK constraints above (dropped and re-added on every start)
+ALTER TABLE ticket_events DROP CONSTRAINT IF EXISTS ticket_events_field_check;
+ALTER TABLE ticket_events ADD CONSTRAINT ticket_events_field_check
+  CHECK (field IN ('status', 'note', 'assigned_to', 'client_message'));
+ALTER TABLE form_submissions DROP CONSTRAINT IF EXISTS form_submissions_form_check;
+ALTER TABLE form_submissions ADD CONSTRAINT form_submissions_form_check
+  CHECK (form IN ('course_request', 'consultation', 'track'));

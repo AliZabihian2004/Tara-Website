@@ -192,6 +192,7 @@
       data: request,
       onSuccess: function (data) {
         success.querySelector("[data-success-code]").textContent = data.tracking_code;
+        success.querySelector("[data-success-track]").href = "track.html?code=" + encodeURIComponent(data.tracking_code);
         success.querySelector("[data-success-course]").textContent = COURSES[request.course].title;
         success.querySelector("[data-success-instructor]").textContent = INSTRUCTORS[request.instructor];
         form.hidden = true;

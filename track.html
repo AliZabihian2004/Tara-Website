@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>پیگیری درخواست | آکادمی تارا</title>
+<meta name="description" content="وضعیت درخواست‌های خود از آکادمی تارا را با کد پیگیری و شماره تماس ببینید.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/variables.css">
+<link rel="stylesheet" href="assets/css/base.css">
+<link rel="stylesheet" href="assets/css/components.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="container site-header__inner">
+    <a href="index.html" class="brand">
+      <img loading="lazy" class="brand__logo" src="assets/img/optimized/logo-mark.webp" alt="" width="60" height="44">
+      آکادمی تارا
+    </a>
+    <nav class="nav">
+      <ul class="nav__links">
+        <li><a href="index.html">خانه</a></li>
+        <li><a href="index.html#courses">دوره‌ها</a></li>
+        <li><a href="index.html#instructors">مدرسان</a></li>
+        <li><a href="index.html#about">درباره ما</a></li>
+        <li><a href="index.html#contact">تماس با ما</a></li>
+      </ul>
+      <button class="theme-toggle" type="button" aria-pressed="false" aria-label="تغییر پوسته"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><path d="M18 2L18.6178 3.23558C18.8833 3.76656 19.016 4.03205 19.1934 4.26211C19.3507 4.46626 19.5337 4.64927 19.7379 4.80664C19.9679 4.98397 20.2334 5.11672 20.7644 5.38221L22 6L20.7644 6.61779C20.2334 6.88328 19.9679 7.01603 19.7379 7.19336C19.5337 7.35073 19.3507 7.53374 19.1934 7.73789C19.016 7.96795 18.8833 8.23344 18.6178 8.76442L18 10L17.3822 8.76442C17.1167 8.23344 16.984 7.96795 16.8066 7.73789C16.6493 7.53374 16.4663 7.35073 16.2621 7.19336C16.0321 7.01603 15.7666 6.88328 15.2356 6.61779L14 6L15.2356 5.38221C15.7666 5.11672 16.0321 4.98397 16.2621 4.80664C16.4663 4.64927 16.6493 4.46626 16.8066 4.26211C16.984 4.03205 17.1167 3.76656 17.3822 3.23558L18 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M21 13.3893C19.689 15.689 17.2145 17.2395 14.3779 17.2395C10.1711 17.2395 6.76075 13.8292 6.76075 9.62233C6.76075 6.78554 8.31149 4.31094 10.6115 3C5.77979 3.45812 2 7.52692 2 12.4785C2 17.7371 6.26292 22 11.5215 22C16.4729 22 20.5415 18.2206 21 13.3893Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <button class="nav__toggle" type="button" aria-expanded="false" aria-label="باز کردن منو">☰</button>
+      <a href="course-request.html" class="btn btn--primary nav__cta">درخواست دوره</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <div class="page-hero page-hero--request">
+    <div class="container">
+      <nav class="breadcrumb" aria-label="مسیر">
+        <a href="index.html">خانه</a>
+        <span class="breadcrumb__sep">/</span>
+        <span>پیگیری درخواست</span>
+      </nav>
+      <h1>پیگیری درخواست</h1>
+      <p class="page-hero__lead">
+        کد پیگیری و شماره تماسی را که هنگام ثبت درخواست وارد کردید بنویسید تا وضعیت درخواست‌های خود را ببینید.
+      </p>
+    </div>
+  </div>
+
+  <section class="section">
+    <div class="container detail-grid request-grid">
+      <div>
+        <div class="info-card request-card">
+          <form class="form" id="track-form" novalidate>
+            <div class="form-row">
+              <div class="form-field">
+                <label class="form-label" for="code">کد پیگیری</label>
+                <input class="form-control" id="code" name="code" type="text" autocomplete="off" dir="ltr" maxlength="12" placeholder="TR-K7P4Q9" required aria-describedby="code-error">
+                <p class="form-error" id="code-error">کد پیگیری یا شماره تماس درست نیست.</p>
+              </div>
+              <div class="form-field">
+                <label class="form-label" for="phone">شماره تماس</label>
+                <input class="form-control" id="phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" dir="ltr" placeholder="09123456789" required aria-describedby="phone-hint phone-error">
+                <p class="form-hint" id="phone-hint">همان شماره‌ای که هنگام ثبت درخواست وارد کردید.</p>
+                <p class="form-error" id="phone-error">لطفاً یک شماره موبایل معتبر وارد کنید.</p>
+              </div>
+            </div>
+
+            <p class="form-alert" id="track-alert" role="alert" hidden>دریافت اطلاعات ناموفق بود؛ لطفاً دوباره تلاش کنید.</p>
+
+            <button type="submit" class="btn btn--primary btn--block">مشاهده وضعیت</button>
+          </form>
+        </div>
+
+        <div class="track-results" id="track-results" aria-live="polite" hidden>
+          <h2 class="track-results__title">درخواست‌های شما</h2>
+          <ul class="track-results__list" id="track-list"></ul>
+        </div>
+      </div>
+
+      <aside class="detail-aside request-aside">
+        <div class="info-card request-next">
+          <h2 class="request-next__title">وضعیت‌ها</h2>
+          <ol class="request-next__list">
+            <li><strong>جدید</strong><span>درخواست شما ثبت شده و در صف بررسی است.</span></li>
+            <li><strong>در حال بررسی</strong><span>کارشناسان تارا روی درخواست شما کار می‌کنند و برای هماهنگی تماس می‌گیرند.</span></li>
+            <li><strong>انجام‌شده</strong><span>رسیدگی به درخواست شما به پایان رسیده است.</span></li>
+          </ol>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer__grid">
+      <div class="footer__brand">
+        <a href="index.html" class="brand"><img loading="lazy" class="brand__logo" src="assets/img/optimized/logo-mark.webp" alt="" width="60" height="44">آکادمی تارا</a>
+        <p>ارائه‌دهنده دوره‌های آموزش سازمانی تخصصی در حوزه حسابداری، هوش مصنوعی و توسعه مهارت‌های مدیریتی.</p>
+      </div>
+      <div class="footer__col">
+        <h4>دوره‌ها</h4>
+        <ul>
+          <li><a href="courses/ai-for-managers.html">هوش مصنوعی برای مدیران</a></li>
+          <li><a href="courses/managerial-accounting.html">حسابداری مدیریتی</a></li>
+          <li><a href="courses/financial-analysis.html">تحلیل مالی پیشرفته</a></li>
+          <li><a href="courses/leadership-skills.html">مهارت‌های رهبری</a></li>
+        </ul>
+      </div>
+      <div class="footer__col">
+        <h4>مدرسان</h4>
+        <ul>
+          <li><a href="instructors/sara-moradi.html">سارا مرادی</a></li>
+          <li><a href="instructors/hossein-karimi.html">حسین کریمی</a></li>
+          <li><a href="instructors/mina-ahmadi.html">مینا احمدی</a></li>
+          <li><a href="instructors/reza-fallahi.html">رضا فلاحی</a></li>
+        </ul>
+      </div>
+      <div class="footer__col">
+        <h4>سازمان</h4>
+        <ul>
+          <li><a href="index.html#about">درباره ما</a></li>
+          <li><a href="index.html#contact">تماس با ما</a></li>
+          <li><a href="track.html">پیگیری درخواست</a></li>
+          <li><a href="mailto:info@tara-academy.ir">info@tara-academy.ir</a></li>
+          <li><a href="tel:+982100000000">۰۲۱-۰۰۰۰۰۰۰۰</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer__bottom">
+      <span>© <span data-year></span> آکادمی تارا. تمامی حقوق محفوظ است.</span>
+      <div class="social-links">
+        <a href="#" aria-label="اینستاگرام">📷</a>
+        <a href="#" aria-label="لینکدین">in</a>
+        <a href="#" aria-label="تلگرام">✈</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/js/main.js"></script>
+<script src="assets/js/form-utils.js"></script>
+<script src="assets/js/track.js"></script>
+</body>
+</html>

@@ -618,6 +618,7 @@
         (STATUS_LABELS[e.new_value] || e.new_value) + "» تغییر داد";
     }
     if (e.field === "note") { return who + " یادداشت داخلی را به‌روز کرد"; }
+    if (e.field === "client_message") { return who + " پیام به متقاضی را به‌روز کرد"; }
     if (!e.new_value) { return who + " مسئول درخواست را برداشت"; }
     return who + " مسئولیت را به " + (e.new_assignee || "یک سرپرست") + " سپرد";
   }
@@ -660,6 +661,7 @@
 
       form.elements.status.value = ticket.status;
       form.elements.note.value = ticket.note;
+      form.elements.client_message.value = ticket.client_message;
       // A ticket can still point at a supervisor who was disabled later
       if (ticket.assigned_to && !assignSelect.querySelector('option[value="' + ticket.assigned_to + '"]')) {
         addOption(assignSelect, String(ticket.assigned_to), (ticket.assigned_name || "سرپرست") + " (غیرفعال)");
@@ -724,6 +726,7 @@
         body: JSON.stringify({
           status: form.elements.status.value,
           note: form.elements.note.value,
+          client_message: form.elements.client_message.value,
           assigned_to: assignSelect.value ? Number(assignSelect.value) : null
         })
       })

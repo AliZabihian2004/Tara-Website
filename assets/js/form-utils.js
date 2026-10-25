@@ -46,7 +46,7 @@ window.TaraForm = (function () {
   }
 
   /* POST JSON and drive the shared submit states:
-     201 → onSuccess(responseJson); 422 → mark the fields the server rejected;
+     2xx → onSuccess(responseJson); 422 → mark the fields the server rejected;
      429 → say when to try again; anything else → show the alert. */
   function submit(options) {
     var form = options.form;
@@ -66,7 +66,7 @@ window.TaraForm = (function () {
       body: JSON.stringify(options.data)
     })
       .then(function (res) {
-        if (res.status === 201) {
+        if (res.ok) {
           return res.json().then(options.onSuccess);
         }
         if (res.status === 422) {

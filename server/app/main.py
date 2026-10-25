@@ -25,6 +25,8 @@ DIGITS = str.maketrans("۰۱۲۳۴۵۶۷۸۹٠١٢٣٤٥٦٧٨٩", "012345678901
 PAGE_SIZE = 20
 # Public form submissions allowed per IP and form within the window
 RATE_LIMIT = 5
+# Tracking-page lookups allowed per IP within the window; with ~1e9 codes and a phone to match, guessing is hopeless
+TRACK_LIMIT = 20
 RATE_WINDOW_SECONDS = 3600
 STATUSES = ("new", "in_progress", "done")
 TEHRAN = ZoneInfo("Asia/Tehran")
@@ -35,7 +37,7 @@ Role = Literal["admin", "supervisor"]
 
 TICKET_COLUMNS = """t.id, t.tracking_code, t.kind, t.first_name, t.last_name, t.company,
                     t.course_slug, t.course_title, t.instructor_slug, t.instructor_name,
-                    t.phone, t.message, t.status, t.note, t.created_at, t.updated_at,
+                    t.phone, t.message, t.status, t.note, t.client_message, t.created_at, t.updated_at,
                     t.assigned_to, a.display_name AS assigned_name"""
 TICKET_FROM = "tickets t LEFT JOIN supervisors a ON a.id = t.assigned_to"
 
@@ -79,7 +81,7 @@ def _honeypot_response() -> dict:
         return {"id": 0, "tracking_code": conn.execute("SELECT tara_tracking_code() AS code").fetchone()["code"]}
 
 
-def _rate_limited(request: Request, form: str) -> JSONResponse | None:
+def _rate_limited(request: Request, form: str, limit: int = RATE_LIMIT) -> JSONResponse | None:
     """Count this submission against the IP's limit for the form; a 429 response if it is over."""
     ip = request.client.host
     with pool.connection() as conn, conn.transaction():
@@ -93,7 +95,7 @@ def _rate_limited(request: Request, form: str) -> JSONResponse | None:
                FROM form_submissions WHERE ip = %s AND form = %s""",
             (RATE_WINDOW_SECONDS, ip, form),
         ).fetchone()
-        if row["n"] >= RATE_LIMIT:
+        if row["n"] >= limit:
             # Retry-After: seconds until the oldest counted submission leaves the window
             return JSONResponse(
                 {"error": "rate_limited"}, status_code=429, headers={"Retry-After": str(int(row["wait"]) + 1)}
@@ -198,6 +200,50 @@ def create_consultation(body: ConsultationIn, request: Request):
             (name, company, phone, message),
         ).fetchone()
     return {"id": row["id"], "tracking_code": row["tracking_code"]}
+
+
+# ---------- Public: request tracking (track.html) ----------
+
+class TrackIn(BaseModel):
+    code: str = ""
+    phone: str = ""
+
+
+def normalize_tracking_code(value: str) -> str:
+    # Accept "tr-k7p4q9", "TRK7P4Q9" or just "K7P4Q9"
+    compact = re.sub(r"[\s\-]", "", value.translate(DIGITS)).upper()
+    if len(compact) == 8 and compact.startswith("TR"):
+        compact = compact[2:]
+    return "TR-" + compact
+
+
+@app.post("/api/track")
+def track(body: TrackIn, request: Request):
+    """Every request made with the phone number, once the code and phone match one of them."""
+    if limited := _rate_limited(request, "track", TRACK_LIMIT):
+        return limited
+
+    code = normalize_tracking_code(body.code)
+    phone = normalize_digits(body.phone)
+    if not PHONE_PATTERN.match(phone):
+        return JSONResponse({"errors": {"phone": "invalid"}}, status_code=422)
+
+    # Phones are stored as 09…, +989… or 00989…; the last 10 digits identify the number
+    with pool.connection() as conn:
+        match = conn.execute(
+            "SELECT 1 FROM tickets WHERE tracking_code = %s AND right(phone, 10) = right(%s, 10)", (code, phone)
+        ).fetchone()
+        if not match:
+            # Same answer whether the code or the phone was wrong
+            return JSONResponse({"errors": {"code": "not_found"}}, status_code=422)
+        items = conn.execute(
+            """SELECT tracking_code, kind, course_title, instructor_name, company, status, client_message,
+                      created_at, updated_at
+               FROM tickets WHERE right(phone, 10) = right(%s, 10)
+               ORDER BY created_at DESC, id DESC""",
+            (phone,),
+        ).fetchall()
+    return {"items": items}
 
 
 # ---------- Supervisor auth ----------
@@ -376,7 +422,7 @@ def export_tickets(
     out.write("﻿")  # BOM so Excel reads the file as UTF-8
     writer = csv.writer(out)
     writer.writerow(["شماره", "کد پیگیری", "نوع", "تاریخ ثبت", "نام", "نام خانوادگی", "سازمان", "تلفن",
-                     "دوره", "مدرس", "وضعیت", "مسئول", "توضیحات", "یادداشت داخلی"])
+                     "دوره", "مدرس", "وضعیت", "مسئول", "توضیحات", "یادداشت داخلی", "پیام به متقاضی"])
     for t in rows:
         writer.writerow([
             t["id"],
@@ -393,6 +439,7 @@ def export_tickets(
             _csv_text(t["assigned_name"]),
             _csv_text(t["message"]),
             _csv_text(t["note"]),
+            _csv_text(t["client_message"]),
         ])
 
     filename = f"tara-tickets-{datetime.now(TEHRAN):%Y-%m-%d}.csv"
@@ -509,6 +556,7 @@ def ticket_events(ticket_id: int, _: dict = Depends(auth.current_supervisor)):
 class TicketUpdate(BaseModel):
     status: Status | None = None
     note: str | None = None
+    client_message: str | None = None
     assigned_to: int | None = None  # null unassigns; leave the field out to keep the current assignee
 
 
@@ -516,10 +564,12 @@ class TicketUpdate(BaseModel):
 def update_ticket(ticket_id: int, body: TicketUpdate, supervisor: dict = Depends(auth.current_supervisor)):
     if body.note is not None and len(body.note) > 5000:
         return JSONResponse({"errors": {"note": "too_long"}}, status_code=422)
+    if body.client_message is not None and len(body.client_message) > 2000:
+        return JSONResponse({"errors": {"client_message": "too_long"}}, status_code=422)
 
     with pool.connection() as conn, conn.transaction():
         current = conn.execute(
-            "SELECT status, note, assigned_to FROM tickets WHERE id = %s FOR UPDATE", (ticket_id,)
+            "SELECT status, note, client_message, assigned_to FROM tickets WHERE id = %s FOR UPDATE", (ticket_id,)
         ).fetchone()
         if not current:
             raise HTTPException(status_code=404, detail="not_found")
@@ -529,6 +579,8 @@ def update_ticket(ticket_id: int, body: TicketUpdate, supervisor: dict = Depends
             changes["status"] = body.status
         if body.note is not None and body.note != current["note"]:
             changes["note"] = body.note
+        if body.client_message is not None and body.client_message != current["client_message"]:
+            changes["client_message"] = body.client_message
         if "assigned_to" in body.model_fields_set and body.assigned_to != current["assigned_to"]:
             if body.assigned_to is not None:
                 ok = conn.execute(
@@ -546,13 +598,14 @@ def update_ticket(ticket_id: int, body: TicketUpdate, supervisor: dict = Depends
             )
             for field, new in changes.items():
                 old = current[field]
-                # Notes can be long; the timeline only needs to know they changed
+                # Notes and messages can be long; the timeline only needs to know they changed
+                text_field = field in ("note", "client_message")
                 conn.execute(
                     """INSERT INTO ticket_events (ticket_id, supervisor_id, field, old_value, new_value)
                        VALUES (%s, %s, %s, %s, %s)""",
                     (ticket_id, supervisor["id"], field,
-                     None if field == "note" or old is None else str(old),
-                     None if field == "note" or new is None else str(new)),
+                     None if text_field or old is None else str(old),
+                     None if text_field or new is None else str(new)),
                 )
         return _get_ticket(conn, ticket_id)
 
@@ -738,7 +791,7 @@ def replace_sessions(slug: str, body: SessionsIn, _: dict = Depends(auth.require
 # Only these paths are public; anything else in the project (.env, server/) is never served.
 
 SITE_DIR = Path(os.environ.get("SITE_DIR", "/site"))
-PUBLIC_PAGES = ("index.html", "course-request.html")
+PUBLIC_PAGES = ("index.html", "course-request.html", "track.html")
 PUBLIC_DIRS = ("assets", "courses", "instructors", "panel")
 
 

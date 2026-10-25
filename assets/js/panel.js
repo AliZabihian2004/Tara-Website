@@ -649,7 +649,6 @@
 
       field("message").textContent = ticket.message;
       field("full_name").textContent = fullName(ticket);
-      field("national_id").textContent = ticket.national_id || "—";
       field("company").textContent = ticket.company || "—";
       field("course_title").textContent = ticket.course_title || "—";
       field("instructor_name").textContent = ticket.instructor_name || "—";

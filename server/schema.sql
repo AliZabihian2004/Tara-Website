@@ -30,9 +30,10 @@ CREATE TABLE IF NOT EXISTS tickets (
 -- Added after the first release; existing rows get empty values
 ALTER TABLE tickets ADD COLUMN IF NOT EXISTS first_name  text NOT NULL DEFAULT '';
 ALTER TABLE tickets ADD COLUMN IF NOT EXISTS last_name   text NOT NULL DEFAULT '';
-ALTER TABLE tickets ADD COLUMN IF NOT EXISTS national_id text NOT NULL DEFAULT '';
+-- National ID (کد ملی) is no longer collected; drop it along with any stored values
+ALTER TABLE tickets DROP COLUMN IF EXISTS national_id;
 
--- Consultation requests share the tickets table; they leave course/instructor/national_id empty
+-- Consultation requests share the tickets table; they leave course/instructor empty
 ALTER TABLE tickets ADD COLUMN IF NOT EXISTS kind text NOT NULL DEFAULT 'course_request'
   CHECK (kind IN ('course_request', 'consultation'));
 ALTER TABLE tickets ADD COLUMN IF NOT EXISTS company text NOT NULL DEFAULT '';

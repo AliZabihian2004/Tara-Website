@@ -35,7 +35,6 @@
 
   var firstNameInput = form.elements.first_name;
   var lastNameInput = form.elements.last_name;
-  var nationalIdInput = form.elements.national_id;
   var companyInput = form.elements.company;
   var courseSelect = form.elements.course;
   var instructorSelect = form.elements.instructor;
@@ -52,16 +51,6 @@
     option.value = value;
     option.textContent = label;
     select.appendChild(option);
-  }
-
-  // Iranian national ID (کد ملی): 10 digits, last one is a mod-11 check digit
-  function isValidNationalId(id) {
-    if (!/^\d{10}$/.test(id) || /^(\d)\1{9}$/.test(id)) { return false; }
-    var sum = 0;
-    for (var i = 0; i < 9; i++) { sum += Number(id.charAt(i)) * (10 - i); }
-    var remainder = sum % 11;
-    var check = Number(id.charAt(9));
-    return remainder < 2 ? check === remainder : check === 11 - remainder;
   }
 
   function renderInstructors() {
@@ -158,14 +147,13 @@
     event.target.classList.remove("is-shaking");
   });
 
-  F.clearOnEdit([firstNameInput, lastNameInput, nationalIdInput, companyInput, instructorSelect, phoneInput, messageInput]);
+  F.clearOnEdit([firstNameInput, lastNameInput, companyInput, instructorSelect, phoneInput, messageInput]);
 
   form.addEventListener("submit", function (event) {
     event.preventDefault();
 
     var firstName = firstNameInput.value.trim();
     var lastName = lastNameInput.value.trim();
-    var nationalId = F.normalizeDigits(nationalIdInput.value);
     var company = companyInput.value.trim();
     var phone = F.normalizeDigits(phoneInput.value);
     var message = messageInput.value.trim();
@@ -173,7 +161,6 @@
     var valid = F.applyChecks([
       [firstNameInput, !F.isValidName(firstName)],
       [lastNameInput, !F.isValidName(lastName)],
-      [nationalIdInput, !isValidNationalId(nationalId)],
       [companyInput, company.length > 100],
       [courseSelect, !COURSES[courseSelect.value]],
       [instructorSelect, !instructorSelect.value],
@@ -190,7 +177,6 @@
     var request = {
       first_name: firstName,
       last_name: lastName,
-      national_id: nationalId,
       company: company,
       course: courseSelect.value,
       instructor: instructorSelect.value,

@@ -28,10 +28,10 @@
   --color-primary-800: oklch(26% 0.095 250);
   --color-primary-900: oklch(18% 0.065 250);
 
-  /* ---------- Secondary Accent — Teal (hue 195) ---------- */
-  --color-teal-300: oklch(76% 0.085 195);
-  --color-teal-500: oklch(58% 0.110 195);
-  --color-teal-700: oklch(38% 0.090 195);
+  /* ---------- Secondary Accent — Gold (hue 75, from logo) ---------- */
+  --color-gold-300: oklch(84% 0.075 80);
+  --color-gold-500: oklch(71% 0.095 75);
+  --color-gold-700: oklch(48% 0.085 70);
 
   /* ---------- Semantic Colors ---------- */
   --color-success: oklch(55% 0.130 155);
@@ -50,8 +50,9 @@
   --accent:         var(--color-primary-500);
   --accent-hover:   var(--color-primary-600);
   --accent-subtle:  var(--color-primary-50);
-  --accent-2:       var(--color-teal-500);
-  --accent-2-subtle: oklch(94% 0.035 195);
+  --accent-2:        var(--color-gold-500);  /* lines, dots, icons — never body text */
+  --accent-2-text:   var(--color-gold-700);  /* gold text on light surfaces */
+  --accent-2-subtle: oklch(95% 0.030 80);
   --danger:         var(--color-danger);
 
   /* ---------- Spacing Scale ---------- */
@@ -117,8 +118,9 @@
   --accent:         oklch(62% 0.118 250);
   --accent-hover:   oklch(70% 0.108 250);
   --accent-subtle:  oklch(22% 0.030 250);
-  --accent-2:       oklch(66% 0.095 195);
-  --accent-2-subtle: oklch(24% 0.045 195);
+  --accent-2:        oklch(76% 0.085 78);
+  --accent-2-text:   oklch(80% 0.080 80);
+  --accent-2-subtle: oklch(24% 0.035 75);
   --danger:         oklch(70% 0.150 25);
 
   --shadow-sm:

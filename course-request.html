@@ -35,7 +35,7 @@
 </header>
 
 <main>
-  <div class="page-hero">
+  <div class="page-hero page-hero--request">
     <div class="container">
       <nav class="breadcrumb" aria-label="مسیر">
         <a href="index.html">خانه</a>
@@ -43,64 +43,76 @@
         <span>درخواست دوره</span>
       </nav>
       <h1>درخواست دوره</h1>
-      <p style="color:var(--text-muted); font-size:var(--text-lg); margin:0; line-height:var(--leading-loose); max-width:55ch;">
+      <p class="page-hero__lead">
         دوره و مدرس مورد نظر خود را انتخاب کنید و نیاز تیم‌تان را برای ما بنویسید. کارشناسان تارا به‌زودی با شما تماس می‌گیرند.
       </p>
     </div>
   </div>
 
   <section class="section">
-    <div class="container" style="max-width:688px;">
-      <div class="info-card">
+    <div class="container detail-grid request-grid">
+      <div class="info-card request-card">
         <form class="form" id="course-request-form" novalidate>
-          <div class="form-row">
-            <div class="form-field">
-              <label class="form-label" for="first_name">نام</label>
-              <input class="form-control" id="first_name" name="first_name" type="text" autocomplete="given-name" maxlength="50" required aria-describedby="first_name-error">
-              <p class="form-error" id="first_name-error">لطفاً نام خود را وارد کنید.</p>
+          <fieldset class="request-step" data-step>
+            <legend class="request-step__title"><span class="request-step__num" aria-hidden="true">۱</span>اطلاعات شما</legend>
+            <div class="form-row">
+              <div class="form-field">
+                <label class="form-label" for="first_name">نام</label>
+                <input class="form-control" id="first_name" name="first_name" type="text" autocomplete="given-name" maxlength="50" required aria-describedby="first_name-error">
+                <p class="form-error" id="first_name-error">لطفاً نام خود را وارد کنید.</p>
+              </div>
+              <div class="form-field">
+                <label class="form-label" for="last_name">نام خانوادگی</label>
+                <input class="form-control" id="last_name" name="last_name" type="text" autocomplete="family-name" maxlength="50" required aria-describedby="last_name-error">
+                <p class="form-error" id="last_name-error">لطفاً نام خانوادگی خود را وارد کنید.</p>
+              </div>
             </div>
-            <div class="form-field">
-              <label class="form-label" for="last_name">نام خانوادگی</label>
-              <input class="form-control" id="last_name" name="last_name" type="text" autocomplete="family-name" maxlength="50" required aria-describedby="last_name-error">
-              <p class="form-error" id="last_name-error">لطفاً نام خانوادگی خود را وارد کنید.</p>
+
+            <div class="form-row">
+              <div class="form-field">
+                <label class="form-label" for="national_id">کد ملی</label>
+                <input class="form-control" id="national_id" name="national_id" type="text" inputmode="numeric" autocomplete="off" dir="ltr" maxlength="10" placeholder="0012345678" required aria-describedby="national_id-hint national_id-error">
+                <p class="form-hint" id="national_id-hint">کد ملی ۱۰ رقمی، بدون خط تیره.</p>
+                <p class="form-error" id="national_id-error">کد ملی وارد‌شده معتبر نیست.</p>
+              </div>
+              <div class="form-field">
+                <label class="form-label" for="phone">شماره تماس</label>
+                <input class="form-control" id="phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" dir="ltr" placeholder="09123456789" required aria-describedby="phone-hint phone-error">
+                <p class="form-hint" id="phone-hint">شماره موبایل با ۰۹ یا <bdi dir="ltr">+98</bdi> شروع شود.</p>
+                <p class="form-error" id="phone-error">لطفاً یک شماره موبایل معتبر وارد کنید.</p>
+              </div>
             </div>
-          </div>
+          </fieldset>
 
-          <div class="form-field">
-            <label class="form-label" for="national_id">کد ملی</label>
-            <input class="form-control" id="national_id" name="national_id" type="text" inputmode="numeric" autocomplete="off" dir="ltr" maxlength="10" placeholder="0012345678" required aria-describedby="national_id-hint national_id-error">
-            <p class="form-hint" id="national_id-hint">کد ملی ۱۰ رقمی، بدون خط تیره.</p>
-            <p class="form-error" id="national_id-error">کد ملی وارد‌شده معتبر نیست.</p>
-          </div>
+          <fieldset class="request-step" data-step>
+            <legend class="request-step__title"><span class="request-step__num" aria-hidden="true">۲</span>دوره و مدرس</legend>
+            <div class="form-row">
+              <div class="form-field">
+                <label class="form-label" for="course">دوره</label>
+                <select class="form-control" id="course" name="course" required aria-describedby="course-error">
+                  <option value="">انتخاب دوره</option>
+                </select>
+                <p class="form-error" id="course-error">لطفاً یک دوره انتخاب کنید.</p>
+              </div>
+              <div class="form-field" id="instructor-field">
+                <label class="form-label" for="instructor">مدرس</label>
+                <select class="form-control" id="instructor" name="instructor" required disabled aria-describedby="instructor-error">
+                  <option value="">ابتدا دوره را انتخاب کنید</option>
+                </select>
+                <p class="form-error" id="instructor-error">لطفاً مدرس دوره را انتخاب کنید.</p>
+              </div>
+            </div>
+          </fieldset>
 
-          <div class="form-field">
-            <label class="form-label" for="course">دوره</label>
-            <select class="form-control" id="course" name="course" required aria-describedby="course-error">
-              <option value="">انتخاب دوره</option>
-            </select>
-            <p class="form-error" id="course-error">لطفاً یک دوره انتخاب کنید.</p>
-          </div>
-
-          <div class="form-field">
-            <label class="form-label" for="instructor">مدرس</label>
-            <select class="form-control" id="instructor" name="instructor" required disabled aria-describedby="instructor-error">
-              <option value="">ابتدا دوره را انتخاب کنید</option>
-            </select>
-            <p class="form-error" id="instructor-error">لطفاً مدرس دوره را انتخاب کنید.</p>
-          </div>
-
-          <div class="form-field">
-            <label class="form-label" for="phone">شماره تماس</label>
-            <input class="form-control" id="phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" dir="ltr" placeholder="09123456789" required aria-describedby="phone-hint phone-error">
-            <p class="form-hint" id="phone-hint">شماره موبایل با ۰۹ یا <bdi dir="ltr">+98</bdi> شروع شود.</p>
-            <p class="form-error" id="phone-error">لطفاً یک شماره موبایل معتبر وارد کنید.</p>
-          </div>
-
-          <div class="form-field">
-            <label class="form-label" for="message">توضیحات</label>
-            <textarea class="form-control" id="message" name="message" rows="5" required placeholder="توضیح دهید چه نیازی دارید؛ مثلاً تعداد شرکت‌کنندگان، زمان مورد نظر یا موضوعات خاص…" aria-describedby="message-error"></textarea>
-            <p class="form-error" id="message-error">لطفاً دست‌کم ۱۰ کاراکتر درباره نیاز خود بنویسید.</p>
-          </div>
+          <fieldset class="request-step" data-step>
+            <legend class="request-step__title"><span class="request-step__num" aria-hidden="true">۳</span>نیاز شما</legend>
+            <div class="form-field">
+              <label class="form-label" for="message">توضیحات</label>
+              <textarea class="form-control" id="message" name="message" rows="5" required placeholder="توضیح دهید چه نیازی دارید؛ مثلاً تعداد شرکت‌کنندگان، زمان مورد نظر یا موضوعات خاص…" aria-describedby="message-counter message-error"></textarea>
+              <p class="form-hint request-counter" id="message-counter"><span data-counter>۰</span> کاراکتر · حداقل ۱۰</p>
+              <p class="form-error" id="message-error">لطفاً دست‌کم ۱۰ کاراکتر درباره نیاز خود بنویسید.</p>
+            </div>
+          </fieldset>
 
           <div class="form-honeypot" aria-hidden="true">
             <label for="website">وب‌سایت</label>
@@ -113,12 +125,45 @@
         </form>
 
         <div class="form-success" id="course-request-success" role="status" tabindex="-1" hidden>
-          <div class="form-success__icon">✓</div>
-          <h2 style="font-size:var(--text-xl); margin-bottom:var(--space-2);">درخواست شما ثبت شد</h2>
+          <div class="form-success__icon">
+            <svg class="form-success__check" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false"><path d="M5 12.5l4.5 4.5L19 7.5" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <h2 class="form-success__title">درخواست شما ثبت شد</h2>
           <p>درخواست شما برای دوره «<strong data-success-course></strong>» با تدریس <strong data-success-instructor></strong> ثبت شد. به‌زودی با شما تماس می‌گیریم.</p>
-          <a href="index.html" class="btn btn--secondary" style="margin-top:var(--space-6);">بازگشت به خانه</a>
+          <a href="index.html" class="btn btn--secondary form-success__action">بازگشت به خانه</a>
         </div>
       </div>
+
+      <aside class="detail-aside request-aside">
+        <div class="info-card request-preview" id="request-preview" aria-live="polite">
+          <div class="request-preview__media">
+            <img data-preview-image alt="" hidden>
+            <span class="request-preview__placeholder" data-preview-placeholder aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" focusable="false"><path d="M4 19.5V6a2 2 0 012-2h12a2 2 0 012 2v13.5M4 19.5A1.5 1.5 0 005.5 21h13a1.5 1.5 0 001.5-1.5M4 19.5A1.5 1.5 0 015.5 18h13a1.5 1.5 0 011.5 1.5M9 8h6M9 11.5h4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </span>
+          </div>
+          <div class="request-preview__body" data-preview-body>
+            <span class="request-preview__eyebrow">دوره انتخابی</span>
+            <h2 class="request-preview__title" data-preview-title>هنوز دوره‌ای انتخاب نشده</h2>
+            <div class="request-preview__instructor" data-preview-instructor hidden>
+              <img data-preview-photo alt="" width="40" height="40">
+              <div>
+                <span class="request-preview__eyebrow">مدرس</span>
+                <strong data-preview-name></strong>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="info-card request-next">
+          <h2 class="request-next__title">بعد از ثبت درخواست</h2>
+          <ol class="request-next__list" data-reveal-stagger>
+            <li><strong>بررسی درخواست</strong><span>کارشناسان تارا نیاز تیم شما را بررسی می‌کنند.</span></li>
+            <li><strong>تماس کارشناس</strong><span>به‌زودی برای هماهنگی با شما تماس می‌گیریم.</span></li>
+            <li><strong>طراحی دوره اختصاصی</strong><span>سرفصل‌ها و زمان‌بندی متناسب با سازمان شما تنظیم می‌شود.</span></li>
+          </ol>
+        </div>
+      </aside>
     </div>
   </section>
 

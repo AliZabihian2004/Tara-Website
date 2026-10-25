@@ -54,6 +54,7 @@ window.TaraForm = (function () {
 
     options.alert.hidden = true;
     button.disabled = true;
+    button.classList.add("is-loading");
     button.textContent = "در حال ارسال…";
 
     return fetch(options.url, {
@@ -82,6 +83,7 @@ window.TaraForm = (function () {
       })
       .then(function () {
         button.disabled = false;
+        button.classList.remove("is-loading");
         button.textContent = label;
       });
   }

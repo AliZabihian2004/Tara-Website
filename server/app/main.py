@@ -624,6 +624,89 @@ def update_supervisor(supervisor_id: int, body: SupervisorUpdate, admin: dict = 
     return {"ok": True}
 
 
+# ---------- Course schedules ----------
+
+MAX_SESSIONS = 40
+
+
+def _schedule(conn, slug: str) -> dict:
+    """Sessions of a course with their state, and where the course is today (Tehran calendar day)."""
+    rows = conn.execute(
+        "SELECT starts_at, title FROM course_sessions WHERE course_slug = %s ORDER BY starts_at",
+        (slug,),
+    ).fetchall()
+    today = datetime.now(TEHRAN).date()
+    sessions = []
+    for number, row in enumerate(rows, start=1):
+        day = row["starts_at"].astimezone(TEHRAN).date()
+        state = "done" if day < today else "today" if day == today else "upcoming"
+        sessions.append({"number": number, "starts_at": row["starts_at"], "title": row["title"], "state": state})
+
+    total = len(sessions)
+    upcoming = [s for s in sessions if s["state"] != "done"]
+    next_at = upcoming[0]["starts_at"] if upcoming else None
+    if not sessions:
+        status = {"state": "none", "current": 0, "total": 0, "next_at": None}
+    elif sessions[0]["state"] == "upcoming":
+        status = {"state": "upcoming", "current": 0, "total": total, "next_at": next_at}
+    elif not upcoming:
+        status = {"state": "finished", "current": total, "total": total, "next_at": None}
+    else:
+        today_session = next((s for s in sessions if s["state"] == "today"), None)
+        current = today_session["number"] if today_session else total - len(upcoming)
+        later = [s for s in sessions if s["state"] == "upcoming"]
+        status = {"state": "running", "current": current, "total": total,
+                  "next_at": later[0]["starts_at"] if later else None}
+    return {"status": status, "sessions": sessions}
+
+
+@app.get("/api/courses/{slug}/schedule")
+def course_schedule(slug: str):
+    if slug not in COURSES:
+        raise HTTPException(status_code=404, detail="not_found")
+    with pool.connection() as conn:
+        return _schedule(conn, slug)
+
+
+@app.get("/api/admin/schedules")
+def list_schedules(_: dict = Depends(auth.require_admin)):
+    with pool.connection() as conn:
+        return [{"slug": slug, "title": course["title"], **_schedule(conn, slug)} for slug, course in COURSES.items()]
+
+
+class SessionIn(BaseModel):
+    starts_at: datetime
+    title: str = ""
+
+
+class SessionsIn(BaseModel):
+    sessions: list[SessionIn]
+
+
+@app.put("/api/admin/courses/{slug}/sessions")
+def replace_sessions(slug: str, body: SessionsIn, _: dict = Depends(auth.require_admin)):
+    errors = {}
+    if slug not in COURSES:
+        errors["course"] = "invalid"
+    if len(body.sessions) > MAX_SESSIONS:
+        errors["sessions"] = "too_many"
+    if any(s.starts_at.tzinfo is None for s in body.sessions):
+        errors["starts_at"] = "timezone_required"
+    if any(len(s.title.strip()) > 100 for s in body.sessions):
+        errors["title"] = "too_long"
+    if errors:
+        return JSONResponse({"errors": errors}, status_code=422)
+
+    with pool.connection() as conn, conn.transaction():
+        conn.execute("DELETE FROM course_sessions WHERE course_slug = %s", (slug,))
+        for s in body.sessions:
+            conn.execute(
+                "INSERT INTO course_sessions (course_slug, starts_at, title) VALUES (%s, %s, %s)",
+                (slug, s.starts_at, s.title.strip()),
+            )
+        return _schedule(conn, slug)
+
+
 # ---------- Static site (form, course pages, panel) ----------
 # Only these paths are public; anything else in the project (.env, server/) is never served.
 

@@ -2,6 +2,28 @@
 (function () {
   "use strict";
 
+  // Motion is opt-in from JS so content is never hidden when scripts or animations are off
+  var prefersReduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (!prefersReduced) { document.documentElement.classList.add("motion"); }
+
+  // Counts a number up to its final value (ease-out); shows the final value at once under reduced motion
+  function countUp(node, target, format, prefix) {
+    prefix = prefix || "";
+    if (prefersReduced) { node.textContent = prefix + format(target); return; }
+    var startTime = null;
+    var DURATION = 1200;
+    var step = function (now) {
+      if (startTime === null) { startTime = now; }
+      var progress = Math.min(1, (now - startTime) / DURATION);
+      var eased = 1 - Math.pow(1 - progress, 3);
+      node.textContent = prefix + format(Math.round(target * eased));
+      if (progress < 1) { window.requestAnimationFrame(step); }
+    };
+    window.requestAnimationFrame(step);
+  }
+
+  window.TaraMotion = { reduced: prefersReduced, countUp: countUp };
+
   // Mobile nav toggle
   var toggle = document.querySelector(".nav__toggle");
   var links = document.querySelector(".nav__links");
@@ -189,6 +211,12 @@
         var match = (!category || card.getAttribute("data-category") === category) &&
           (!instructor || card.getAttribute("data-instructors").split(" ").indexOf(instructor) !== -1) &&
           (!query || text.indexOf(query) !== -1);
+        if (match && card.hidden) {
+          // Replay a short entrance for cards that come back into the results
+          card.classList.remove("is-entering");
+          void card.offsetWidth;
+          card.classList.add("is-entering");
+        }
         card.hidden = !match;
         if (match) { shown += 1; }
       });
@@ -215,31 +243,81 @@
 
   // Hero stats count up once they scroll into view (final values are already in the HTML)
   var counters = document.querySelectorAll("[data-count-to]");
-  var prefersReduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   if (counters.length && "IntersectionObserver" in window && !prefersReduced) {
     var counterFormat = new Intl.NumberFormat("fa-IR", { useGrouping: false });
-    var countUp = function (node) {
-      var target = Number(node.getAttribute("data-count-to"));
-      var startTime = null;
-      var DURATION = 1200;
-      var step = function (now) {
-        if (startTime === null) { startTime = now; }
-        var progress = Math.min(1, (now - startTime) / DURATION);
-        var eased = 1 - Math.pow(1 - progress, 3); // ease-out
-        node.textContent = "+" + counterFormat.format(Math.round(target * eased));
-        if (progress < 1) { window.requestAnimationFrame(step); }
-      };
-      window.requestAnimationFrame(step);
-    };
     var counterObserver = new IntersectionObserver(function (entries) {
       entries.forEach(function (entry) {
         if (entry.isIntersecting) {
           counterObserver.unobserve(entry.target);
-          countUp(entry.target);
+          countUp(entry.target, Number(entry.target.getAttribute("data-count-to")), counterFormat.format, "+");
         }
       });
     }, { threshold: 0.6 });
     counters.forEach(function (node) { counterObserver.observe(node); });
+  }
+
+  // Scroll reveal: [data-reveal] fades up once; children of [data-reveal-stagger] follow one after another
+  document.querySelectorAll("[data-reveal-stagger]").forEach(function (group) {
+    Array.prototype.forEach.call(group.children, function (child, i) {
+      child.setAttribute("data-reveal", "");
+      child.style.setProperty("--reveal-delay", Math.min(i, 6) * 70 + "ms");
+    });
+  });
+  var revealTargets = document.querySelectorAll("[data-reveal]");
+  if (revealTargets.length) {
+    if ("IntersectionObserver" in window && !prefersReduced) {
+      var revealObserver = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            revealObserver.unobserve(entry.target);
+            entry.target.classList.add("is-visible");
+          }
+        });
+      }, { threshold: 0.15, rootMargin: "0px 0px -8% 0px" });
+      revealTargets.forEach(function (node) { revealObserver.observe(node); });
+    } else {
+      revealTargets.forEach(function (node) { node.classList.add("is-visible"); });
+    }
+  }
+
+  // Testimonials ribbon: repeat the cards until one set is wider than the box, then duplicate that set
+  // so moving the track by half its width loops seamlessly
+  var ticker = document.querySelector("[data-ticker]");
+  if (ticker && !prefersReduced) {
+    var track = ticker.querySelector(".ticker__track");
+    var originals = Array.prototype.slice.call(track.children);
+    var PX_PER_SECOND = 40;
+
+    var buildTicker = function () {
+      track.querySelectorAll("[data-ticker-clone]").forEach(function (node) { node.remove(); });
+      ticker.classList.add("is-running");
+      var addClone = function (node) {
+        var clone = node.cloneNode(true);
+        clone.setAttribute("data-ticker-clone", "");
+        clone.setAttribute("aria-hidden", "true");
+        clone.inert = true;
+        track.appendChild(clone);
+      };
+      var setWidth = track.scrollWidth;
+      var copies = 1;
+      while (setWidth * copies < ticker.clientWidth && copies < 10) {
+        originals.forEach(addClone);
+        copies += 1;
+      }
+      // Second half: an exact copy of the first
+      Array.prototype.slice.call(track.children).forEach(addClone);
+      track.style.setProperty("--ticker-duration", Math.round((track.scrollWidth / 2) / PX_PER_SECOND) + "s");
+    };
+
+    buildTicker();
+    var tickerWidth = ticker.clientWidth;
+    var tickerTimer = null;
+    window.addEventListener("resize", function () {
+      clearTimeout(tickerTimer);
+      tickerTimer = setTimeout(function () {
+        if (ticker.clientWidth !== tickerWidth) { tickerWidth = ticker.clientWidth; buildTicker(); }
+      }, 200);
+    });
   }
 
   // Footer year

@@ -48,14 +48,18 @@ Semantic purpose: trust, expertise, organization.
 | `--color-primary-800`   | `oklch(26% 0.095 250)`  |
 | `--color-primary-900`   | `oklch(18% 0.065 250)`  |
 
-### Secondary Accent — Teal (hue 195°)
-Semantic purpose: learning, growth, freshness.
+### Secondary Accent — Gold (hue 75°)
+Semantic purpose: brand detail, taken from the logo (navy + gold).
 
 | Token                | Value                   |
 |----------------------|-------------------------|
-| `--color-teal-300`   | `oklch(76% 0.085 195)`  |
-| `--color-teal-500`   | `oklch(58% 0.110 195)`  |
-| `--color-teal-700`   | `oklch(38% 0.090 195)`  |
+| `--color-gold-300`   | `oklch(84% 0.075 80)`   |
+| `--color-gold-500`   | `oklch(71% 0.095 75)`   |
+| `--color-gold-700`   | `oklch(48% 0.085 70)`   |
+
+Role tokens: `--accent-2` (lines, dots, icons, fills), `--accent-2-text` (gold text, ≥4.5:1 on surfaces), `--accent-2-subtle` (tinted backgrounds).
+
+**Gold rule:** gold is for hairlines, dots, icons and small labels only (eyebrow marker, `.badge--gold`, `.divider-gold`, footer headings). Never use it for body or muted text; when gold is used as text, use `--accent-2-text`.
 
 ### Semantic Colors
 
@@ -253,7 +257,7 @@ transition: transform 150ms ease, opacity 150ms ease;
 | Dimension       | Decision                       | Rationale                                     |
 |-----------------|--------------------------------|-----------------------------------------------|
 | Primary color   | Navy blue — OKLCH 250°         | Trust, expertise, organizational authority    |
-| Secondary color | Teal — OKLCH 195°              | Learning, freshness, growth                   |
+| Secondary color | Gold — OKLCH 75°               | Brand detail, from the logo                   |
 | Background      | off-white ~96% lightness       | Softer than pure white, less eye strain       |
 | Body text       | off-black ~16% lightness       | High readability, no harsh pure-black contrast|
 | Shadows         | border + shallow shadow        | Real elevation without visual clutter         |

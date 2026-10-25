@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>زمان‌بندی دوره‌ها | پنل سرپرست تارا</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/variables.css">
+<link rel="stylesheet" href="../assets/css/base.css">
+<link rel="stylesheet" href="../assets/css/components.css">
+</head>
+<body data-page="schedule">
+
+<header class="site-header">
+  <div class="container site-header__inner">
+    <a href="dashboard.html" class="brand">
+      <img class="brand__logo" src="../assets/img/optimized/logo-mark.webp" alt="" width="60" height="44">
+      پنل سرپرست
+    </a>
+    <nav class="nav panel-nav" aria-label="پنل">
+      <ul class="nav__links">
+        <li><a href="dashboard.html">داشبورد</a></li>
+        <li><a href="index.html">درخواست‌ها</a></li>
+        <li data-admin-only hidden><a href="supervisors.html">سرپرستان</a></li>
+        <li data-admin-only hidden><a href="schedule.html" aria-current="page">زمان‌بندی دوره‌ها</a></li>
+        <li><a href="account.html">حساب من</a></li>
+        <li class="panel-nav__logout"><button class="btn btn--secondary btn--sm" type="button" data-logout>خروج</button></li>
+      </ul>
+      <span class="panel-header__user" data-user-name></span>
+      <button class="theme-toggle" type="button" aria-pressed="false" aria-label="تغییر پوسته"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><path d="M18 2L18.6178 3.23558C18.8833 3.76656 19.016 4.03205 19.1934 4.26211C19.3507 4.46626 19.5337 4.64927 19.7379 4.80664C19.9679 4.98397 20.2334 5.11672 20.7644 5.38221L22 6L20.7644 6.61779C20.2334 6.88328 19.9679 7.01603 19.7379 7.19336C19.5337 7.35073 19.3507 7.53374 19.1934 7.73789C19.016 7.96795 18.8833 8.23344 18.6178 8.76442L18 10L17.3822 8.76442C17.1167 8.23344 16.984 7.96795 16.8066 7.73789C16.6493 7.53374 16.4663 7.35073 16.2621 7.19336C16.0321 7.01603 15.7666 6.88328 15.2356 6.61779L14 6L15.2356 5.38221C15.7666 5.11672 16.0321 4.98397 16.2621 4.80664C16.4663 4.64927 16.6493 4.46626 16.8066 4.26211C16.984 4.03205 17.1167 3.76656 17.3822 3.23558L18 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M21 13.3893C19.689 15.689 17.2145 17.2395 14.3779 17.2395C10.1711 17.2395 6.76075 13.8292 6.76075 9.62233C6.76075 6.78554 8.31149 4.31094 10.6115 3C5.77979 3.45812 2 7.52692 2 12.4785C2 17.7371 6.26292 22 11.5215 22C16.4729 22 20.5415 18.2206 21 13.3893Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <button class="nav__toggle" type="button" aria-expanded="false" aria-label="باز کردن منو">☰</button>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <div class="page-hero page-hero--panel">
+    <div class="container">
+      <h1 style="margin-bottom:var(--space-2);">زمان‌بندی دوره‌ها</h1>
+      <p class="text-muted" style="margin:0;">تاریخ جلسات هر دوره را تعیین کنید. وضعیت دوره (شروع‌نشده، جلسه چندم، پایان‌یافته) از روی همین تاریخ‌ها در صفحه دوره نمایش داده می‌شود.</p>
+    </div>
+  </div>
+
+  <section class="section">
+    <div class="container">
+      <p class="form-alert" id="schedule-alert" role="alert" hidden></p>
+
+      <div class="detail-grid detail-grid--wide">
+        <div>
+          <div class="data-table-wrap">
+            <table class="data-table data-table--static">
+              <thead>
+                <tr>
+                  <th>دوره</th>
+                  <th>جلسات</th>
+                  <th>وضعیت</th>
+                  <th>جلسه بعد</th>
+                  <th><span class="sr-only">عملیات</span></th>
+                </tr>
+              </thead>
+              <tbody id="schedule-body"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <aside>
+          <form class="form info-card" id="schedule-form" novalidate>
+            <h2 style="font-size:var(--text-xl); margin:0;" id="schedule-form-title">ویرایش جلسات</h2>
+            <p class="form-hint" id="schedule-empty">برای ویرایش، یک دوره را از جدول انتخاب کنید.</p>
+            <div id="schedule-editor" hidden>
+              <ol class="session-rows" id="session-rows"></ol>
+              <button type="button" class="btn btn--secondary btn--sm" id="add-session">+ افزودن جلسه</button>
+              <p class="form-hint">ساعت‌ها به وقت تهران است.</p>
+              <p class="form-alert" id="schedule-form-alert" role="alert" hidden></p>
+              <p class="form-hint" id="schedule-status" role="status"></p>
+              <button type="submit" class="btn btn--primary btn--block">ذخیره</button>
+            </div>
+          </form>
+        </aside>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script src="../assets/js/main.js"></script>
+<script src="../assets/js/panel.js"></script>
+</body>
+</html>

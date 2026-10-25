@@ -111,6 +111,21 @@ button, input, select, textarea { font-family: inherit; font-size: inherit; }
   border-radius: var(--radius-sm);
   margin-bottom: var(--space-4);
 }
+.eyebrow::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent-2);
+  flex-shrink: 0;
+}
+.divider-gold {
+  border: 0;
+  height: 1px;
+  background: linear-gradient(to right, transparent, var(--accent-2), transparent);
+  margin-block: var(--space-8);
+}
+.divider-gold--short { width: 120px; margin-inline: auto; }
 
 [hidden] { display: none !important; }
 

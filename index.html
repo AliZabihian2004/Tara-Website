@@ -105,7 +105,7 @@
   </section>
 
   <div class="container">
-    <div class="logo-strip">
+    <div class="logo-strip" data-reveal>
       <span>مورد اعتماد سازمان‌ها</span>
       <span>گروه صنعتی آرمان</span>
       <span>بانک توسعه</span>
@@ -118,7 +118,7 @@
   <!-- ABOUT -->
   <section class="section" id="about">
     <div class="container">
-      <div class="section-head">
+      <div class="section-head" data-reveal>
         <div>
           <span class="eyebrow">درباره تارا</span>
           <h2>یادگیری سازمانی، طراحی‌شده برای نتیجه</h2>
@@ -129,7 +129,7 @@
         </p>
       </div>
 
-      <div class="grid grid--3">
+      <div class="grid grid--3" data-reveal-stagger>
         <div class="feature">
           <div class="feature__icon">🎯</div>
           <div>
@@ -158,7 +158,7 @@
   <!-- COURSES -->
   <section class="section section--tight" id="courses" style="background: var(--surface-raised); border-block: 1px solid var(--border);">
     <div class="container">
-      <div class="section-head">
+      <div class="section-head" data-reveal>
         <div>
           <span class="eyebrow">دوره‌های آموزشی</span>
           <h2>دوره‌های پرطرفدار سازمانی</h2>
@@ -184,7 +184,7 @@
       </div>
       <p class="course-filters__status" id="course-filter-status" role="status" aria-live="polite"></p>
 
-      <div class="grid grid--3" id="course-grid">
+      <div class="grid grid--3" id="course-grid" data-reveal-stagger>
 
         <a href="courses/ai-for-managers.html" class="card course-card" data-category="ai" data-instructors="sara-moradi reza-fallahi" data-hours="16">
           <div class="course-card__media"><img loading="lazy" src="assets/img/optimized/course-ai.webp" alt="دوره هوش مصنوعی برای مدیران"></div>
@@ -293,7 +293,7 @@
   <!-- INSTRUCTORS -->
   <section class="section" id="instructors">
     <div class="container">
-      <div class="section-head">
+      <div class="section-head" data-reveal>
         <div>
           <span class="eyebrow">مدرسان تارا</span>
           <h2>یادگیری از متخصصان صنعت</h2>
@@ -301,7 +301,7 @@
         <p>مدرسان تارا ترکیبی از تجربه اجرایی در سازمان‌های بزرگ و سابقه تدریس دانشگاهی دارند.</p>
       </div>
 
-      <div class="grid grid--4">
+      <div class="grid grid--4" data-reveal-stagger>
         <a href="instructors/sara-moradi.html" class="card instructor-card">
           <img loading="lazy" class="instructor-card__photo" src="assets/img/optimized/instructor-sara.webp" alt="سارا مرادی">
           <h3 class="instructor-card__name">سارا مرادی</h3>
@@ -337,40 +337,42 @@
   <!-- TESTIMONIALS -->
   <section class="section section--tight" style="background: var(--surface-raised); border-block: 1px solid var(--border);">
     <div class="container">
-      <div class="section-head">
+      <div class="section-head" data-reveal>
         <div>
           <span class="eyebrow">نظر سازمان‌ها</span>
           <h2>تجربه همکاری با تارا</h2>
         </div>
       </div>
-      <div class="grid grid--3">
-        <div class="testimonial">
-          <p class="testimonial__quote">«دوره حسابداری مدیریتی تارا باعث شد مدیران غیرمالی ما تصمیمات مالی دقیق‌تری بگیرند.»</p>
-          <div class="testimonial__author">
-            <img loading="lazy" class="avatar" style="width:44px;height:44px;" src="assets/img/optimized/instructor-hossein.webp" alt="">
-            <div>
-              <strong>مدیر منابع انسانی</strong>
-              <span>هلدینگ پویا</span>
+      <div class="ticker" data-ticker data-reveal>
+        <div class="ticker__track">
+          <div class="testimonial">
+            <p class="testimonial__quote">«دوره حسابداری مدیریتی تارا باعث شد مدیران غیرمالی ما تصمیمات مالی دقیق‌تری بگیرند.»</p>
+            <div class="testimonial__author">
+              <img loading="lazy" class="avatar" style="width:44px;height:44px;" src="assets/img/optimized/instructor-hossein.webp" alt="">
+              <div>
+                <strong>مدیر منابع انسانی</strong>
+                <span>هلدینگ پویا</span>
+              </div>
             </div>
           </div>
-        </div>
-        <div class="testimonial">
-          <p class="testimonial__quote">«دوره هوش مصنوعی برای مدیران دیدگاه تیم رهبری ما را نسبت به فناوری کاملاً تغییر داد.»</p>
-          <div class="testimonial__author">
-            <img loading="lazy" class="avatar" style="width:44px;height:44px;" src="assets/img/optimized/instructor-sara.webp" alt="">
-            <div>
-              <strong>مدیرعامل</strong>
-              <span>فناوران البرز</span>
+          <div class="testimonial">
+            <p class="testimonial__quote">«دوره هوش مصنوعی برای مدیران دیدگاه تیم رهبری ما را نسبت به فناوری کاملاً تغییر داد.»</p>
+            <div class="testimonial__author">
+              <img loading="lazy" class="avatar" style="width:44px;height:44px;" src="assets/img/optimized/instructor-sara.webp" alt="">
+              <div>
+                <strong>مدیرعامل</strong>
+                <span>فناوران البرز</span>
+              </div>
             </div>
           </div>
-        </div>
-        <div class="testimonial">
-          <p class="testimonial__quote">«برگزاری دوره اختصاصی درون‌سازمانی تارا کاملاً منطبق با نیازهای تیم ما طراحی شد.»</p>
-          <div class="testimonial__author">
-            <img loading="lazy" class="avatar" style="width:44px;height:44px;" src="assets/img/optimized/instructor-mina.webp" alt="">
-            <div>
-              <strong>مدیر آموزش</strong>
-              <span>گروه صنعتی آرمان</span>
+          <div class="testimonial">
+            <p class="testimonial__quote">«برگزاری دوره اختصاصی درون‌سازمانی تارا کاملاً منطبق با نیازهای تیم ما طراحی شد.»</p>
+            <div class="testimonial__author">
+              <img loading="lazy" class="avatar" style="width:44px;height:44px;" src="assets/img/optimized/instructor-mina.webp" alt="">
+              <div>
+                <strong>مدیر آموزش</strong>
+                <span>گروه صنعتی آرمان</span>
+              </div>
             </div>
           </div>
         </div>
@@ -382,13 +384,13 @@
   <!-- FAQ -->
   <section class="section" id="faq">
     <div class="container" style="max-width:860px;">
-      <div class="section-head" style="justify-content:center; text-align:center;">
+      <div class="section-head" data-reveal style="justify-content:center; text-align:center;">
         <div>
           <span class="eyebrow">پرسش‌های متداول</span>
           <h2>پاسخ پرسش‌های رایج سازمان‌ها</h2>
         </div>
       </div>
-      <div class="curriculum">
+      <div class="curriculum" data-reveal-stagger>
         <details class="curriculum-item">
           <summary class="curriculum-item__head">
             <span>دوره‌ها به چه صورتی برگزار می‌شوند؟</span>

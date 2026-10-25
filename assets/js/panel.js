@@ -84,8 +84,46 @@
   }
 
   function setBadge(node, status) {
+    var changed = /status-badge--/.test(node.className) && node.className.indexOf("status-badge--" + status) === -1;
     node.className = "status-badge status-badge--" + status;
     node.textContent = STATUS_LABELS[status] || status;
+    if (changed) { replay(node, "is-changed"); }
+  }
+
+  // ---------- Motion helpers (CSS does nothing under reduced motion) ----------
+  // Restart a one-shot CSS animation class
+  function replay(node, className) {
+    node.classList.remove(className);
+    void node.offsetWidth;
+    node.classList.add(className);
+  }
+
+  // Short staggered entrance for freshly rendered rows
+  function enter(node, index) {
+    node.classList.add("row-enter");
+    node.style.setProperty("--row-delay", Math.min(index, 8) * 25 + "ms");
+  }
+
+  function flash(node, text) {
+    node.textContent = text;
+    replay(node, "is-flash");
+  }
+
+  // Shimmering placeholder rows until the first response arrives
+  function skeletonRows(tbody, columns, count) {
+    tbody.textContent = "";
+    for (var r = 0; r < (count || 5); r++) {
+      var row = el("tr", "skeleton-row");
+      row.setAttribute("aria-hidden", "true");
+      for (var c = 0; c < columns; c++) {
+        var cell = el("td");
+        var bar = el("span", "skeleton skeleton--text");
+        bar.style.width = (c === 0 ? 70 : 40 + ((r + c) % 3) * 15) + "%";
+        cell.appendChild(bar);
+        row.appendChild(cell);
+      }
+      tbody.appendChild(row);
+    }
   }
 
   function showAlert(node, text) {
@@ -200,8 +238,9 @@
       "V" + (y + height) + "Z";
   }
 
-  function renderDailyChart(container, daily) {
+  function renderDailyChart(container, daily, animate) {
     container.textContent = "";
+    container.classList.toggle("chart--animate", Boolean(animate));
     var width = Math.max(container.clientWidth, 280);
     var height = 240;
     var margin = { top: 24, right: 12, bottom: 32, left: 36 };
@@ -242,6 +281,7 @@
       var bar = null;
       if (d.count > 0) {
         bar = svg("path", { d: columnPath(x, y, barW, h), class: "chart__bar" });
+        bar.style.setProperty("--bar-delay", i * 12 + "ms");
         root.appendChild(bar);
       }
       bars.push({ bar: bar, x: x + barW / 2, y: y, data: d });
@@ -328,7 +368,10 @@
       row.appendChild(el("span", "bar-list__label", r.title));
       var track = el("span", "bar-list__track");
       var bar = el("span", "bar-list__bar");
-      bar.style.width = max ? (r.n / max) * 100 + "%" : "0";
+      var width = max ? (r.n / max) * 100 + "%" : "0";
+      bar.style.width = window.TaraMotion && !window.TaraMotion.reduced ? "0" : width;
+      // Grow to the real width on the next frame so the transition runs
+      window.requestAnimationFrame(function () { window.requestAnimationFrame(function () { bar.style.width = width; }); });
       if (!r.n) { bar.classList.add("is-zero"); }
       track.appendChild(bar);
       track.appendChild(el("span", "bar-list__value", formatNumber(r.n)));
@@ -346,7 +389,16 @@
     var courseEl = document.getElementById("course-chart");
     var stats = null;
 
-    function kpi(name, value) { document.querySelector('[data-kpi="' + name + '"]').textContent = value; }
+    function kpi(name, value) {
+      var node = document.querySelector('[data-kpi="' + name + '"]');
+      if (typeof value === "number" && window.TaraMotion) {
+        node.textContent = "";
+        window.TaraMotion.countUp(node, value, formatNumber);
+      } else {
+        node.textContent = value;
+        replay(node, "is-loaded");
+      }
+    }
     function kpiMeta(name, text, tone) {
       var node = document.querySelector('[data-kpi-meta="' + name + '"]');
       node.textContent = text;
@@ -354,11 +406,11 @@
     }
 
     function render() {
-      kpi("new", formatNumber(stats.by_status.new));
-      kpi("in_progress", formatNumber(stats.by_status.in_progress));
+      kpi("new", stats.by_status.new);
+      kpi("in_progress", stats.by_status.in_progress);
       kpiMeta("done", formatNumber(stats.by_status.done) + " انجام‌شده تا امروز");
 
-      kpi("week", formatNumber(stats.this_week));
+      kpi("week", stats.this_week);
       var diff = stats.this_week - stats.last_week;
       if (diff > 0) {
         kpiMeta("week", "▲ " + formatNumber(diff) + " بیشتر از ۷ روز قبل از آن", "up");
@@ -373,11 +425,11 @@
         ? "بر اساس " + formatNumber(stats.picked_up_count) + " درخواست پیگیری‌شده"
         : "هنوز درخواستی پیگیری نشده است");
 
-      kpi("unassigned", formatNumber(stats.unassigned_open));
+      kpi("unassigned", stats.unassigned_open);
       kpiMeta("kind", formatNumber(stats.by_kind.course_request) + " درخواست دوره، " +
         formatNumber(stats.by_kind.consultation) + " مشاوره");
 
-      renderDailyChart(dailyEl, stats.daily);
+      renderDailyChart(dailyEl, stats.daily, true);
       renderDailyTable(dailyTable, stats.daily);
     }
 
@@ -394,7 +446,13 @@
         render();
         renderCourseBars(courseEl, rows);
       })
-      .catch(function () { showAlert(alertBox); });
+      .catch(function () {
+        // Don't leave placeholders shimmering forever
+        document.querySelectorAll("#kpis .skeleton, #daily-chart .skeleton, #course-chart .skeleton").forEach(function (node) {
+          node.replaceWith(node.closest(".kpi") ? "—" : "");
+        });
+        showAlert(alertBox);
+      });
 
     var toggle = document.querySelector("[data-table-toggle]");
     toggle.addEventListener("click", function () {
@@ -478,9 +536,10 @@
         body.appendChild(empty);
       }
 
-      data.items.forEach(function (ticket) {
+      data.items.forEach(function (ticket, index) {
         var href = "ticket.html?id=" + ticket.id;
         var row = document.createElement("tr");
+        enter(row, index);
         row.addEventListener("click", function (event) {
           if (event.target.tagName !== "A") { window.location.href = href; }
         });
@@ -510,13 +569,18 @@
       pagination.querySelector("[data-page-next]").disabled = data.page >= pages;
     }
 
+    skeletonRows(body, 8);
+
     function load() {
       alertBox.hidden = true;
       var exportParams = params(false).toString();
       exportLink.href = "/api/admin/tickets/export.csv" + (exportParams ? "?" + exportParams : "");
       api("/api/admin/tickets?" + params(true).toString())
         .then(render)
-        .catch(function () { showAlert(alertBox); });
+        .catch(function () {
+          body.querySelectorAll(".skeleton-row").forEach(function (row) { row.remove(); });
+          showAlert(alertBox);
+        });
     }
 
     function filterChanged(key, value) {
@@ -566,6 +630,7 @@
     var submitBtn = form.querySelector("[type=submit]");
     var assignSelect = form.elements.assigned_to;
     var timeline = document.getElementById("timeline");
+    var skeleton = document.getElementById("ticket-skeleton");
 
     function field(name) { return document.querySelector('[data-field="' + name + '"]'); }
 
@@ -600,18 +665,21 @@
         addOption(assignSelect, String(ticket.assigned_to), (ticket.assigned_name || "سرپرست") + " (غیرفعال)");
       }
       assignSelect.value = ticket.assigned_to ? String(ticket.assigned_to) : "";
+      skeleton.hidden = true;
       view.hidden = false;
     }
 
     function renderTimeline(events, ticket) {
       timeline.textContent = "";
-      events.forEach(function (e) {
+      events.forEach(function (e, index) {
         var item = el("li", "timeline__item");
+        enter(item, index);
         item.appendChild(el("span", "timeline__text", describeEvent(e)));
         item.appendChild(el("span", "timeline__time", formatDate(e.created_at)));
         timeline.appendChild(item);
       });
       var created = el("li", "timeline__item timeline__item--start");
+      enter(created, events.length);
       created.appendChild(el("span", "timeline__text",
         ticket.kind === "consultation" ? "درخواست مشاوره از سایت ثبت شد" : "درخواست دوره از سایت ثبت شد"));
       created.appendChild(el("span", "timeline__time", formatDate(ticket.created_at)));
@@ -623,6 +691,7 @@
     }
 
     if (!id || !/^\d+$/.test(id)) {
+      skeleton.hidden = true;
       showAlert(alertBox, "شناسه درخواست نامعتبر است.");
       return;
     }
@@ -637,6 +706,7 @@
         return loadTimeline(ticket);
       })
       .catch(function (err) {
+        skeleton.hidden = true;
         showAlert(alertBox, err.status === 404 ? "این درخواست پیدا نشد." : "دریافت درخواست ناموفق بود.");
       });
 
@@ -659,7 +729,7 @@
       })
         .then(function (ticket) {
           render(ticket);
-          saveStatus.textContent = "تغییرات ذخیره شد.";
+          flash(saveStatus, "تغییرات ذخیره شد.");
           return loadTimeline(ticket);
         })
         .catch(function (err) {
@@ -687,9 +757,12 @@
     var editAlert = document.getElementById("edit-alert");
     var editing = null;
 
+    skeletonRows(body, 6, 4);
+
     function load() {
       alertBox.hidden = true;
       api("/api/admin/supervisors").then(render).catch(function () {
+        body.querySelectorAll(".skeleton-row").forEach(function (row) { row.remove(); });
         showAlert(alertBox, "دریافت فهرست سرپرستان ناموفق بود.");
       });
     }
@@ -700,9 +773,10 @@
 
     function render(list) {
       body.textContent = "";
-      list.forEach(function (s) {
+      list.forEach(function (s, index) {
         var isMe = s.id === me.id;
         var row = el("tr");
+        enter(row, index);
         if (!s.is_active) { row.classList.add("is-inactive"); }
 
         var name = el("td");
@@ -813,7 +887,7 @@
         body: JSON.stringify({ username: username, display_name: name, password: f.password.value, role: f.role.value })
       })
         .then(function () {
-          addStatus.textContent = "«" + name + "» اضافه شد.";
+          flash(addStatus, "«" + name + "» اضافه شد.");
           addForm.reset();
           load();
         })
@@ -827,6 +901,272 @@
             addStatus.textContent = "افزودن ناموفق بود؛ لطفاً دوباره تلاش کنید.";
           }
         });
+    });
+
+    load();
+  }
+
+  // ---------- Course schedules ----------
+  var JALALI_MONTHS = ["فروردین", "اردیبهشت", "خرداد", "تیر", "مرداد", "شهریور", "مهر", "آبان", "آذر", "دی", "بهمن", "اسفند"];
+  var DAY_MS = 86400000;
+  var persianParts = new Intl.DateTimeFormat("en-u-ca-persian-nu-latn", { timeZone: "UTC", year: "numeric", month: "numeric", day: "numeric" });
+  var tehranPersianParts = new Intl.DateTimeFormat("en-u-ca-persian-nu-latn", { timeZone: "Asia/Tehran", year: "numeric", month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit", hourCycle: "h23" });
+  var scheduleDayFormat = new Intl.DateTimeFormat("fa-IR", { timeZone: "Asia/Tehran", weekday: "long", day: "numeric", month: "long" });
+
+  function partsOf(format, date) {
+    var out = {};
+    format.formatToParts(date).forEach(function (p) { out[p.type] = p.value; });
+    return out;
+  }
+
+  // UTC midnight (ms) → { y, m, d } in the Jalali calendar
+  function toJalali(ms) {
+    var p = partsOf(persianParts, new Date(ms));
+    return { y: parseInt(p.year, 10), m: parseInt(p.month, 10), d: parseInt(p.day, 10) };
+  }
+
+  // Jalali date → UTC midnight (ms) of the Gregorian day, or null if the date doesn't exist (e.g. 31 Mehr)
+  function fromJalali(y, m, d) {
+    var target = y * 10000 + m * 100 + d;
+    var ms = Date.UTC(y + 621, 2, 21) + ((m - 1) * 31 - Math.max(m - 7, 0) + d - 1) * DAY_MS;
+    for (var i = 0; i < 6; i++) {
+      var j = toJalali(ms);
+      var key = j.y * 10000 + j.m * 100 + j.d;
+      if (key === target) { return ms; }
+      var step = key < target ? DAY_MS : -DAY_MS;
+      var nextJ = toJalali(ms + step);
+      var nextKey = nextJ.y * 10000 + nextJ.m * 100 + nextJ.d;
+      // Stepped over the target without hitting it → no such day
+      if ((key < target) !== (nextKey <= target) && nextKey !== target) { return null; }
+      ms += step;
+    }
+    return null;
+  }
+
+  function pad(n) { return (n < 10 ? "0" : "") + n; }
+
+  // ISO timestamp → the Jalali date and Tehran time shown in the editor
+  function sessionFields(iso) {
+    var p = partsOf(tehranPersianParts, new Date(iso));
+    return { y: parseInt(p.year, 10), m: parseInt(p.month, 10), d: parseInt(p.day, 10), time: pad(parseInt(p.hour, 10)) + ":" + p.minute };
+  }
+
+  var SCHEDULE_STATES = {
+    none: { label: "زمان‌بندی نشده", badge: "inactive" },
+    upcoming: { label: "شروع نشده", badge: "new" },
+    running: { label: "در حال برگزاری", badge: "done" },
+    finished: { label: "پایان‌یافته", badge: "inactive" }
+  };
+
+  function initSchedule() {
+    if (me.role !== "admin") {
+      window.location.href = "dashboard.html";
+      return;
+    }
+
+    var body = document.getElementById("schedule-body");
+    var alertBox = document.getElementById("schedule-alert");
+    var form = document.getElementById("schedule-form");
+    var formTitle = document.getElementById("schedule-form-title");
+    var emptyHint = document.getElementById("schedule-empty");
+    var editor = document.getElementById("schedule-editor");
+    var rows = document.getElementById("session-rows");
+    var formAlert = document.getElementById("schedule-form-alert");
+    var formStatus = document.getElementById("schedule-status");
+    var submitBtn = form.querySelector("[type=submit]");
+    var thisYear = toJalali(Date.now()).y;
+    var courses = [];
+    var editing = null;
+
+    skeletonRows(body, 5, 6);
+
+    function load() {
+      alertBox.hidden = true;
+      return api("/api/admin/schedules").then(function (list) {
+        courses = list;
+        render();
+      }).catch(function () {
+        body.querySelectorAll(".skeleton-row").forEach(function (row) { row.remove(); });
+        showAlert(alertBox, "دریافت زمان‌بندی دوره‌ها ناموفق بود.");
+      });
+    }
+
+    function render() {
+      body.textContent = "";
+      courses.forEach(function (c, index) {
+        var row = el("tr");
+        enter(row, index);
+        var title = el("td", null, c.title);
+        title.setAttribute("data-label", "دوره");
+        row.appendChild(title);
+
+        var count = el("td", "num", formatNumber(c.status.total));
+        count.setAttribute("data-label", "جلسات");
+        row.appendChild(count);
+
+        var state = SCHEDULE_STATES[c.status.state];
+        var label = state.label;
+        if (c.status.state === "running") { label += " · جلسه " + formatNumber(c.status.current) + " از " + formatNumber(c.status.total); }
+        var status = el("td");
+        status.setAttribute("data-label", "وضعیت");
+        status.appendChild(el("span", "status-badge status-badge--" + state.badge, label));
+        row.appendChild(status);
+
+        var next = el("td", null, c.status.next_at ? scheduleDayFormat.format(new Date(c.status.next_at)) : "—");
+        next.setAttribute("data-label", "جلسه بعد");
+        row.appendChild(next);
+
+        var actionsCell = el("td");
+        actionsCell.setAttribute("data-label", "عملیات");
+        var actions = el("div", "data-table__actions");
+        var edit = el("button", "btn btn--ghost btn--sm", "ویرایش");
+        edit.type = "button";
+        edit.addEventListener("click", function () { openEditor(c); });
+        actions.appendChild(edit);
+        actionsCell.appendChild(actions);
+        row.appendChild(actionsCell);
+        body.appendChild(row);
+      });
+    }
+
+    function select(className, label, options, value) {
+      var node = el("select", "form-control " + className);
+      node.setAttribute("aria-label", label);
+      options.forEach(function (o) { addOption(node, String(o[0]), o[1]); });
+      node.value = String(value);
+      return node;
+    }
+
+    function addRow(fields) {
+      var item = el("li", "session-row");
+      var number = el("span", "session-row__number");
+      item.appendChild(number);
+
+      var days = [];
+      for (var d = 1; d <= 31; d++) { days.push([d, formatNumber(d)]); }
+      var months = JALALI_MONTHS.map(function (name, i) { return [i + 1, name]; });
+      var years = [];
+      for (var y = Math.min(thisYear - 1, fields.y); y <= Math.max(thisYear + 2, fields.y); y++) { years.push([y, formatNumber(y).replace(/٬/g, "")]); }
+
+      var date = el("div", "session-row__date");
+      date.appendChild(select("session-row__day", "روز", days, fields.d));
+      date.appendChild(select("session-row__month", "ماه", months, fields.m));
+      date.appendChild(select("session-row__year", "سال", years, fields.y));
+      item.appendChild(date);
+
+      var time = el("input", "form-control session-row__time");
+      time.type = "time";
+      time.value = fields.time;
+      time.setAttribute("aria-label", "ساعت");
+      time.setAttribute("dir", "ltr");
+      item.appendChild(time);
+
+      var title = el("input", "form-control session-row__title");
+      title.type = "text";
+      title.maxLength = 100;
+      title.placeholder = "عنوان جلسه (اختیاری)";
+      title.value = fields.title || "";
+      item.appendChild(title);
+
+      var remove = el("button", "btn btn--ghost btn--sm session-row__remove", "حذف");
+      remove.type = "button";
+      remove.addEventListener("click", function () {
+        // Fade the row out first, unless motion is off
+        if (window.TaraMotion && window.TaraMotion.reduced) { item.remove(); renumber(); return; }
+        item.classList.add("is-leaving");
+        setTimeout(function () { item.remove(); renumber(); }, 200);
+      });
+      item.appendChild(remove);
+
+      rows.appendChild(item);
+      renumber();
+    }
+
+    function renumber() {
+      rows.querySelectorAll(".session-row__number").forEach(function (node, i) { node.textContent = "جلسه " + formatNumber(i + 1); });
+    }
+
+    function readRow(item) {
+      function val(cls) { return item.querySelector("." + cls).value; }
+      return {
+        y: parseInt(val("session-row__year"), 10),
+        m: parseInt(val("session-row__month"), 10),
+        d: parseInt(val("session-row__day"), 10),
+        time: val("session-row__time"),
+        title: val("session-row__title").trim()
+      };
+    }
+
+    function openEditor(course) {
+      editing = course;
+      formTitle.textContent = "جلسات «" + course.title + "»";
+      emptyHint.hidden = true;
+      editor.hidden = false;
+      formAlert.hidden = true;
+      formStatus.textContent = "";
+      rows.textContent = "";
+      course.sessions.forEach(function (s) {
+        var f = sessionFields(s.starts_at);
+        f.title = s.title;
+        addRow(f);
+      });
+      form.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    document.getElementById("add-session").addEventListener("click", function () {
+      var items = rows.querySelectorAll(".session-row");
+      var fields;
+      var last = items.length ? readRow(items[items.length - 1]) : null;
+      var lastMs = last ? fromJalali(last.y, last.m, last.d) : null;
+      if (lastMs !== null) {
+        // One week after the previous session, same time
+        var j = toJalali(lastMs + 7 * DAY_MS);
+        fields = { y: j.y, m: j.m, d: j.d, time: last.time || "10:00" };
+      } else {
+        var t = toJalali(Date.now());
+        fields = { y: t.y, m: t.m, d: t.d, time: "10:00" };
+      }
+      addRow(fields);
+    });
+
+    form.addEventListener("submit", function (event) {
+      event.preventDefault();
+      if (!editing) { return; }
+      formAlert.hidden = true;
+      formStatus.textContent = "";
+
+      var sessions = [];
+      var invalid = null;
+      rows.querySelectorAll(".session-row").forEach(function (item, i) {
+        var f = readRow(item);
+        var ms = fromJalali(f.y, f.m, f.d);
+        if (ms === null || !/^\d{2}:\d{2}$/.test(f.time)) {
+          if (invalid === null) { invalid = i + 1; }
+          return;
+        }
+        var g = new Date(ms);
+        sessions.push({
+          starts_at: g.getUTCFullYear() + "-" + pad(g.getUTCMonth() + 1) + "-" + pad(g.getUTCDate()) + "T" + f.time + ":00+03:30",
+          title: f.title
+        });
+      });
+      if (invalid !== null) {
+        showAlert(formAlert, "تاریخ یا ساعت جلسه " + formatNumber(invalid) + " معتبر نیست.");
+        return;
+      }
+
+      submitBtn.disabled = true;
+      api("/api/admin/courses/" + editing.slug + "/sessions", { method: "PUT", body: JSON.stringify({ sessions: sessions }) })
+        .then(function () {
+          var slug = editing.slug;
+          return load().then(function () {
+            var fresh = courses.filter(function (c) { return c.slug === slug; })[0];
+            if (fresh) { openEditor(fresh); }
+            flash(formStatus, "ذخیره شد.");
+          });
+        })
+        .catch(function () { showAlert(formAlert, "ذخیره ناموفق بود؛ لطفاً دوباره تلاش کنید."); })
+        .then(function () { submitBtn.disabled = false; });
     });
 
     load();
@@ -865,7 +1205,7 @@
       api("/api/auth/password", { method: "POST", body: JSON.stringify({ current: f.current.value, new: f.new.value }) })
         .then(function () {
           form.reset();
-          status.textContent = "رمز عبور تغییر کرد.";
+          flash(status, "رمز عبور تغییر کرد.");
         })
         .catch(function (err) {
           status.textContent = "";
@@ -887,6 +1227,7 @@
       if (page === "list") { initList(); }
       if (page === "ticket") { initTicket(); }
       if (page === "supervisors") { initSupervisors(); }
+      if (page === "schedule") { initSchedule(); }
       if (page === "account") { initAccount(); }
     });
   }

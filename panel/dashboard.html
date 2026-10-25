@@ -24,6 +24,7 @@
         <li><a href="dashboard.html" aria-current="page">داشبورد</a></li>
         <li><a href="index.html">درخواست‌ها</a></li>
         <li data-admin-only hidden><a href="supervisors.html">سرپرستان</a></li>
+        <li data-admin-only hidden><a href="schedule.html">زمان‌بندی دوره‌ها</a></li>
         <li><a href="account.html">حساب من</a></li>
         <li class="panel-nav__logout"><button class="btn btn--secondary btn--sm" type="button" data-logout>خروج</button></li>
       </ul>
@@ -49,28 +50,28 @@
       <div class="kpi-grid" id="kpis" aria-live="polite">
         <a class="kpi" href="index.html?status=new">
           <span class="kpi__label">درخواست‌های جدید</span>
-          <span class="kpi__value" data-kpi="new">—</span>
+          <span class="kpi__value" data-kpi="new"><span class="skeleton skeleton--value"></span></span>
           <span class="kpi__meta">منتظر اولین پیگیری</span>
         </a>
         <a class="kpi" href="index.html?status=in_progress">
           <span class="kpi__label">در حال بررسی</span>
-          <span class="kpi__value" data-kpi="in_progress">—</span>
-          <span class="kpi__meta" data-kpi-meta="done">—</span>
+          <span class="kpi__value" data-kpi="in_progress"><span class="skeleton skeleton--value"></span></span>
+          <span class="kpi__meta" data-kpi-meta="done"><span class="skeleton skeleton--text"></span></span>
         </a>
         <div class="kpi">
           <span class="kpi__label">۷ روز گذشته</span>
-          <span class="kpi__value" data-kpi="week">—</span>
-          <span class="kpi__meta" data-kpi-meta="week">—</span>
+          <span class="kpi__value" data-kpi="week"><span class="skeleton skeleton--value"></span></span>
+          <span class="kpi__meta" data-kpi-meta="week"><span class="skeleton skeleton--text"></span></span>
         </div>
         <div class="kpi">
           <span class="kpi__label">میانه زمان تا اولین پیگیری</span>
-          <span class="kpi__value kpi__value--text" data-kpi="pickup">—</span>
-          <span class="kpi__meta" data-kpi-meta="pickup">—</span>
+          <span class="kpi__value kpi__value--text" data-kpi="pickup"><span class="skeleton skeleton--text"></span></span>
+          <span class="kpi__meta" data-kpi-meta="pickup"><span class="skeleton skeleton--text"></span></span>
         </div>
         <a class="kpi" href="index.html?assigned=none">
           <span class="kpi__label">باز و بدون مسئول</span>
-          <span class="kpi__value" data-kpi="unassigned">—</span>
-          <span class="kpi__meta" data-kpi-meta="kind">—</span>
+          <span class="kpi__value" data-kpi="unassigned"><span class="skeleton skeleton--value"></span></span>
+          <span class="kpi__meta" data-kpi-meta="kind"><span class="skeleton skeleton--text"></span></span>
         </a>
       </div>
 
@@ -83,7 +84,7 @@
             </div>
             <button class="btn btn--ghost btn--sm" type="button" data-table-toggle="daily-table" aria-expanded="false">نمایش جدول</button>
           </div>
-          <div class="chart" id="daily-chart"></div>
+          <div class="chart" id="daily-chart"><span class="skeleton skeleton--block" aria-hidden="true"></span></div>
           <div class="chart-table" id="daily-table" hidden></div>
         </section>
 
@@ -94,7 +95,7 @@
               <p class="chart-card__sub">همه درخواست‌های دوره از ابتدا</p>
             </div>
           </div>
-          <div class="bar-list" id="course-chart"></div>
+          <div class="bar-list" id="course-chart"><span class="skeleton skeleton--bar" aria-hidden="true" style="width:90%"></span><span class="skeleton skeleton--bar" aria-hidden="true" style="width:70%"></span><span class="skeleton skeleton--bar" aria-hidden="true" style="width:55%"></span><span class="skeleton skeleton--bar" aria-hidden="true" style="width:40%"></span><span class="skeleton skeleton--bar" aria-hidden="true" style="width:25%"></span><span class="skeleton skeleton--bar" aria-hidden="true" style="width:15%"></span></div>
         </section>
       </div>
     </div>

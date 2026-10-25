@@ -61,3 +61,12 @@ CREATE TABLE IF NOT EXISTS ticket_events (
   created_at    timestamptz NOT NULL DEFAULT now()
 );
 CREATE INDEX IF NOT EXISTS ticket_events_ticket_idx ON ticket_events (ticket_id, created_at);
+
+-- Scheduled sessions of each course; numbered by starts_at order
+CREATE TABLE IF NOT EXISTS course_sessions (
+  id          bigserial PRIMARY KEY,
+  course_slug text NOT NULL,
+  starts_at   timestamptz NOT NULL,
+  title       text NOT NULL DEFAULT ''
+);
+CREATE INDEX IF NOT EXISTS course_sessions_course_idx ON course_sessions (course_slug, starts_at);

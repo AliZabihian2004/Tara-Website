@@ -24,6 +24,7 @@
         <li><a href="dashboard.html">داشبورد</a></li>
         <li><a href="index.html" aria-current="page">درخواست‌ها</a></li>
         <li data-admin-only hidden><a href="supervisors.html">سرپرستان</a></li>
+        <li data-admin-only hidden><a href="schedule.html">زمان‌بندی دوره‌ها</a></li>
         <li><a href="account.html">حساب من</a></li>
         <li class="panel-nav__logout"><button class="btn btn--secondary btn--sm" type="button" data-logout>خروج</button></li>
       </ul>
@@ -53,6 +54,13 @@
   <section class="section">
     <div class="container">
       <p class="form-alert" id="ticket-alert" role="alert" hidden></p>
+
+      <div class="ticket-skeleton" id="ticket-skeleton" aria-hidden="true">
+        <span class="skeleton skeleton--text" style="width:30%; height:1.4em;"></span>
+        <span class="skeleton skeleton--block" style="height:120px;"></span>
+        <span class="skeleton skeleton--text" style="width:50%;"></span>
+        <span class="skeleton skeleton--text" style="width:40%;"></span>
+      </div>
 
       <div class="detail-grid" id="ticket-view" hidden>
         <div>

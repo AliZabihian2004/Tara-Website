@@ -84,6 +84,8 @@
     var current = 0;
     var timer = null;
     var dots = [];
+    // CSS uses this for the Ken Burns zoom and the active dot's progress fill
+    slider.style.setProperty("--slider-interval", INTERVAL + "ms");
 
     // Images after the first carry data-src and load just before they're shown
     function loadSlide(index) {
@@ -113,6 +115,7 @@
       });
       current = index;
       loadSlide((index + 1) % slides.length);
+      slider.dispatchEvent(new CustomEvent("slidechange", { detail: { index: index, slide: slides[index] } }));
     }
 
     // Wait for the next photo to finish loading so it never fades in half-empty
@@ -133,12 +136,14 @@
       }
     }
 
-    function stop() { clearInterval(timer); timer = null; }
+    function stop() { clearInterval(timer); timer = null; slider.classList.remove("is-ticking"); }
     // Autoplay always runs; it only pauses while the tab is in the background
     function start() {
       stop();
       if (!document.hidden) {
         timer = setInterval(advance, INTERVAL);
+        void slider.offsetWidth; // restart the progress fill in step with the timer
+        slider.classList.add("is-ticking");
       }
     }
     // Choosing a slide restarts the countdown so the next one doesn't jump in early

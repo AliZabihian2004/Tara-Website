@@ -252,6 +252,127 @@ transition: transform 150ms ease, opacity 150ms ease;
 
 ---
 
+## Editorial Layer (v2)
+
+Added October 2026. Additive only: every token above keeps its value.
+Aesthetic stays calm, purposeful, legible. The editorial layer adds scale, rhythm and hairlines, not noise.
+Tokens live in `assets/css/variables.css`. Homepage styles live in `home-editorial.css` and are scoped to `body.page-home`, so pages adopt the layer one at a time.
+
+### Display type
+
+| Token               | Value                                            | Use                                 |
+|---------------------|--------------------------------------------------|-------------------------------------|
+| `--text-5xl`        | `2.8125rem` (45px)                               | continues the 1.25 scale            |
+| `--text-6xl`        | `3.5rem` (56px)                                  | large numerals (step counter)       |
+| `--text-display`    | `clamp(--text-3xl, 1.2rem + 3vw, --text-6xl)`    | **hero h1 only**                    |
+| `--text-section`    | `clamp(--text-2xl, 1.1rem + 1.6vw, --text-4xl)`  | homepage section h2                 |
+| `--leading-display` | `1.3`                                            | Persian display lines need the room |
+| `--measure-display` | `18ch`                                           | max width of display headings       |
+
+- Display headings use weight 800 and `text-wrap: balance`.
+- Lead paragraphs under section heads use `--text-body` at `--text-lg`. Do not use `--text-muted` for long text, because it falls below 4.5:1 on `--surface`.
+
+### Editorial patterns
+
+- **Numbered eyebrow:** `<span class="eyebrow"><span class="eyebrow__num">۰۱</span>Label</span>`. The number uses `--accent-2-text`, followed by a 24px gold hairline. Sections are numbered in reading order, and the hero eyebrow stays a pill.
+- **Hairlines:** use `--rule-gold` for decorative rules. Structural dividers stay on `--border`.
+- **Numbered lists:** rows divided by `--border`, a 56px icon tile, and an outlined numeral (`-webkit-text-stroke` on `--border-strong`, gold on hover).
+- **Sticky aside:** in two-column sections (5fr / 7fr), the heading column is `position: sticky` on desktop and static at 860px and below.
+- **Icons:** inline SVG sprite (`#i-*`), 24×24 viewBox, 1.75 stroke, `currentColor`. No emoji in UI.
+
+### Surfaces, radius, category tones
+
+| Token              | Value                                  | Use                                       |
+|--------------------|----------------------------------------|-------------------------------------------|
+| `--radius-2xl`     | `24px`                                 | large media panels, desktop dialogs       |
+| `--rule-gold`      | gold at 60% via `color-mix`            | hairlines                                 |
+| `--surface-sunken` | surface mixed toward border            | quiet panels                              |
+| `--tone-1/2/3`     | navy 500, navy 300, gold 500 (dark set lighter) | category bars. **Always paired with a text label.** |
+
+### Motion tokens
+
+| Token               | Value                      | Use                                   |
+|---------------------|----------------------------|---------------------------------------|
+| `--ease-out`        | `cubic-bezier(.2,.7,.2,1)` | all entrances and state changes       |
+| `--duration-fast`   | `150ms`                    | hover, press                          |
+| `--duration-base`   | `240ms`                    | state changes, dialogs                |
+| `--duration-enter`  | `600ms`                    | one-time reveal entrances             |
+| `--duration-ambient`| `24s`                      | slow background drift (hero only)     |
+| `--tilt-max`        | `4deg`                     | pointer tilt on cards                 |
+
+- Interactive transitions stay in the 120–240ms range. Only one-time entrances (`--duration-enter`) and ambient hero motion may be longer.
+- Motion is opt-in through `html.motion`, which `main.js` sets unless reduced motion is on. Content is never hidden when scripts or motion are off.
+- Pointer effects (tilt, spotlight, parallax) apply only on `(hover: hover) and (pointer: fine)`.
+
+### Interactive components (homepage)
+
+- **Course card:** the whole card is clickable through a stretched title link. A "quick view" button sits over the photo (always visible on touch). Hover adds tilt, spotlight and a gold hairline under the photo.
+- **Quick-view dialog:** native `<dialog>` with `showModal()`. Focus starts on the close button, Esc or a backdrop click closes it, and focus returns to the trigger. It becomes a bottom sheet at 720px and below, and ←/→ browse the visible courses (RTL aware).
+- **Catalog at a glance:** stats and category bars are computed from the cards on the page. Segments act as filter buttons that drive the real tabs.
+- **Process timeline:** a rail fills navy→gold with scroll progress, past steps turn active, and a large step counter sits in the sticky aside.
+
+### Course pages (`body.page-course`, `course-editorial.css`)
+
+- **Title:** `--text-title` = `clamp(--text-3xl, 1.2rem + 2.2vw, --text-5xl)`, for inner-page h1 only.
+- **Section headings:** `.course-h2` with a gold `.course-h2__num` (۰۱–۰۴) above the heading.
+- **Header:** a glass info card (`.info-card--glass`) over an animated background.
+- **Syllabus:** modules are numbered in gold with Persian digits.
+
+### Animated course backgrounds (`course-bg.js`)
+
+Code-drawn on `<canvas data-course-bg>`, using colors read from tokens. They re-read the colors when the theme changes.
+
+| Category                 | Motif (`body[data-motif]`) | Idea                                              |
+|--------------------------|----------------------------|---------------------------------------------------|
+| AI                       | `neural`                   | drifting nodes, links, gold signals along edges   |
+| Accounting / finance     | `ledger`                   | ledger grid, flowing chart lines, scanning cursor |
+| Organizational skills    | `paths`                    | routes converging on a shared goal, gold movers   |
+
+- **Placements:**
+  - Header: full strength, masked down to about 35% behind the title column.
+  - Syllabus: `data-intensity` 0.7, as a radial accent.
+  - Closing band: `data-tone="inverse"`, using light lines on navy.
+- **Performance and motion:**
+  - Rendering is capped at device pixel ratio 2, and the animation pauses when off-screen or when the tab is hidden.
+  - Under reduced motion it draws one still frame.
+  - Pointer effects apply on fine pointers only.
+
+### Staff panel (`body.panel-app`, `panel-app.css`)
+
+Compact density for daily work. It uses the same palette, type and motion tokens as the site.
+
+| Token                         | Value      | Use                                          |
+|-------------------------------|------------|----------------------------------------------|
+| `--panel-sidebar-w`           | `248px`    | sidebar width                                |
+| `--panel-sidebar-w-collapsed` | `68px`     | icon rail; the choice is saved per browser   |
+| `--panel-topbar-h`            | `56px`     | sticky top bar; table headers stick under it |
+| `--panel-gutter`              | `24px` (16px on mobile) | page side padding               |
+| `--panel-row-pad`             | `10px 12px`| table cell padding                           |
+| `--panel-drawer-w`            | `520px`    | ticket drawer                                |
+| `--status-new / -progress / -done` | navy / warning / gold | status dots, board columns, stacked bar |
+
+- **Shell:**
+  - The sidebar sits at inline-start (right in RTL) and holds the brand, grouped nav ("کار روزانه", plus "مدیریت" for admins only) and the user chip with theme and logout.
+  - The active item gets an accent-subtle background and a 3px gold marker.
+  - At 960px and below it becomes an off-canvas drawer with a scrim. Esc closes it and focus moves into it.
+- **Live badge:** the requests nav item shows the count of new requests, refreshed every 60 seconds.
+- **Status:** always shown as a dot plus a label, never by color alone.
+- **Requests page:**
+  - The table/board switch is remembered.
+  - Board: drag a card between columns, or use the "move" menu on each card (keyboard and touch). The move happens instantly and is undone if the server refuses.
+  - Clicking a row or card opens the ticket drawer:
+    - a native dialog with prev/next buttons
+    - Ctrl/⌘+Enter saves, and closing with unsaved changes asks first
+    - `?ticket=ID` deep links
+    - the full ticket page stays one click away
+- **Dashboard:**
+  - KPI tiles with icon tiles and a 14-day sparkline.
+  - Daily chart with a 7/14/30-day range, a 7-day moving average in gold, and a summary of total, daily average and busiest day.
+  - Status stacked bar and request-type donut, whose parts link to the filtered list.
+- **Login:** split screen, with a navy brand panel showing the animated `paths` motif (`course-bg.js`) and the form.
+
+---
+
 ## Summary Table
 
 | Dimension       | Decision                       | Rationale                                     |
@@ -265,3 +386,6 @@ transition: transform 150ms ease, opacity 150ms ease;
 | Color space     | OKLCH throughout               | Perceptually uniform, stable hue across steps |
 | Type ratio      | 1.25 Major Third               | Calm hierarchy — not loud, not flat           |
 | Dark mode       | Separate token set             | Independent lightness decisions per theme     |
+| Display type    | Fluid, 800 weight, balanced    | Editorial scale without new typefaces (v2)    |
+| Decoration      | Gold hairlines + numerals      | Premium editorial feel, no visual noise (v2)  |
+| Icons           | 1.75-stroke SVG sprite         | Consistent, theme-aware, no emoji (v2)        |

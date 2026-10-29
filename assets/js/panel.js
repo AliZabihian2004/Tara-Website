@@ -147,6 +147,72 @@
     try { return new URLSearchParams(window.location.search).get(name); } catch (e) { return null; }
   }
 
+  // ---------- App shell: sidebar rail, mobile drawer ----------
+  var SIDEBAR_KEY = "tara-sidebar";
+
+  function initShell() {
+    var root = document.documentElement;
+    var sidebar = document.getElementById("app-sidebar");
+    if (!sidebar) { return; }
+    var collapseBtn = document.querySelector("[data-sidebar-collapse]");
+    var openBtn = document.querySelector("[data-sidebar-open]");
+    var closeBtn = document.querySelector("[data-sidebar-close]");
+    var scrim = document.querySelector("[data-sidebar-scrim]");
+
+    function syncCollapse() {
+      var collapsed = root.classList.contains("sidebar-collapsed");
+      if (collapseBtn) {
+        collapseBtn.setAttribute("aria-pressed", String(collapsed));
+        collapseBtn.setAttribute("aria-label", collapsed ? "باز کردن منو" : "جمع کردن منو");
+      }
+    }
+    syncCollapse();
+    if (collapseBtn) {
+      collapseBtn.addEventListener("click", function () {
+        var collapsed = root.classList.toggle("sidebar-collapsed");
+        try { localStorage.setItem(SIDEBAR_KEY, collapsed ? "collapsed" : "open"); } catch (e) {}
+        syncCollapse();
+      });
+    }
+
+    // Below 960px the sidebar is an off-canvas drawer
+    function setOpen(open) {
+      sidebar.classList.toggle("is-open", open);
+      if (scrim) { scrim.hidden = !open; }
+      document.body.classList.toggle("has-sidebar", open);
+      if (openBtn) { openBtn.setAttribute("aria-expanded", String(open)); }
+      if (open) {
+        var first = sidebar.querySelector(".app-nav__link");
+        if (first) { first.focus(); }
+      } else if (openBtn && sidebar.contains(document.activeElement)) {
+        openBtn.focus();
+      }
+    }
+    if (openBtn) { openBtn.addEventListener("click", function () { setOpen(true); }); }
+    if (closeBtn) { closeBtn.addEventListener("click", function () { setOpen(false); }); }
+    if (scrim) { scrim.addEventListener("click", function () { setOpen(false); }); }
+    document.addEventListener("keydown", function (event) {
+      if (event.key === "Escape" && sidebar.classList.contains("is-open")) { setOpen(false); }
+    });
+    window.matchMedia("(min-width: 961px)").addEventListener("change", function (mq) { if (mq.matches) { setOpen(false); } });
+  }
+
+  // Live count of new requests on the «درخواست‌ها» nav item
+  var navBadge = null;
+  var navCount = null;
+  function setNavNew(count) {
+    if (!navBadge) { navBadge = document.querySelector("[data-nav-new]"); }
+    if (!navBadge) { return; }
+    navBadge.hidden = !count;
+    navBadge.textContent = formatNumber(count);
+    navBadge.setAttribute("aria-label", formatNumber(count) + " درخواست جدید");
+    if (navCount !== null && count !== navCount) { replay(navBadge, "is-bumped"); }
+    navCount = count;
+  }
+  function refreshNavNew() {
+    return api("/api/admin/tickets?status=new").then(function (data) { setNavNew(data.counts.new); }).catch(function () {});
+  }
+
   // ---------- Header (signed-in pages) ----------
   var me = null;
 
@@ -155,6 +221,13 @@
       me = data;
       var nameEl = document.querySelector("[data-user-name]");
       if (nameEl) { nameEl.textContent = me.display_name; }
+      var initialEl = document.querySelector("[data-user-initial]");
+      if (initialEl) { initialEl.textContent = (me.display_name || "?").trim().charAt(0); }
+      var roleEl = document.querySelector("[data-user-role]");
+      if (roleEl) { roleEl.textContent = ROLE_LABELS[me.role] || ""; }
+      refreshNavNew();
+      // Keep the badge fresh while the tab is open
+      setInterval(function () { if (!document.hidden) { refreshNavNew(); } }, 60000);
       if (me.role === "admin") {
         document.querySelectorAll("[data-admin-only]").forEach(function (node) { node.hidden = false; });
       }
@@ -238,7 +311,7 @@
       "V" + (y + height) + "Z";
   }
 
-  function renderDailyChart(container, daily, animate) {
+  function renderDailyChart(container, daily, animate, avg) {
     container.textContent = "";
     container.classList.toggle("chart--animate", Boolean(animate));
     var width = Math.max(container.clientWidth, 280);
@@ -255,7 +328,7 @@
     var root = svg("svg", {
       viewBox: "0 0 " + width + " " + height, width: width, height: height,
       class: "chart__svg", role: "img", direction: "ltr",
-      "aria-label": "نمودار ستونی تعداد درخواست در هر روز، ۳۰ روز گذشته. برای مقادیر دقیق از نمایش جدول استفاده کنید."
+      "aria-label": "نمودار ستونی تعداد درخواست در هر روز، " + formatNumber(daily.length) + " روز گذشته. برای مقادیر دقیق از نمایش جدول استفاده کنید."
     });
 
     var ticks = 4;
@@ -293,13 +366,23 @@
         root.appendChild(peak);
       }
 
-      // Date label every 5 days, plus today
-      if (i % 5 === 0 || i === daily.length - 1) {
+      // Date labels: every day for a week, every 5 days otherwise, plus today
+      var every = daily.length <= 7 ? 1 : daily.length <= 14 ? 2 : 5;
+      if (i % every === 0 || i === daily.length - 1) {
         var tick = svg("text", { x: x + barW / 2, y: height - 10, class: "chart__tick", "text-anchor": "middle" });
         tick.textContent = i === daily.length - 1 ? "امروز" : dayFormat.format(new Date(d.day + "T12:00:00"));
         root.appendChild(tick);
       }
     });
+
+    // 7-day moving average (gold line) over the bars
+    if (avg && avg.length === daily.length) {
+      var pts = avg.map(function (v, i) { return [margin.left + band * i + band / 2, margin.top + plotH - (v / yMax) * plotH]; });
+      var dPath = pts.map(function (pt, i) { return (i ? "L" : "M") + pt[0].toFixed(1) + "," + pt[1].toFixed(1); }).join("");
+      root.appendChild(svg("path", { d: dPath, class: "chart__avg" }));
+      var lastPt = pts[pts.length - 1];
+      root.appendChild(svg("circle", { cx: lastPt[0], cy: lastPt[1], r: 3.5, class: "chart__avg-dot" }));
+    }
 
     // Hit areas span the whole band and the full plot height
     var active = -1;
@@ -309,11 +392,9 @@
       if (index < 0) { hideTooltip(); return; }
       var b = bars[index];
       var count = b.data.count;
-      showTooltip(
-        formatNumber(count) + " درخواست",
-        longDayFormat.format(new Date(b.data.day + "T12:00:00")),
-        clientX, clientY
-      );
+      var label = longDayFormat.format(new Date(b.data.day + "T12:00:00"));
+      if (avg) { label += " · میانگین ۷ روزه: " + numberFormat.format(Math.round(avg[index] * 10) / 10); }
+      showTooltip(formatNumber(count) + " درخواست", label, clientX, clientY);
     }
 
     bars.forEach(function (b, i) {
@@ -381,12 +462,121 @@
     if (!rows.length) { container.appendChild(el("p", "text-muted", "هنوز درخواستی ثبت نشده است.")); }
   }
 
+  // Tiny trend line for a KPI tile (decorative; the numbers are in the tile and chart)
+  function renderSpark(container, daily) {
+    if (!container || !daily.length) { return; }
+    var w = 96, h = 32, max = Math.max(1, daily.reduce(function (m, d) { return Math.max(m, d.count); }, 0));
+    var step = w / Math.max(1, daily.length - 1);
+    var pts = daily.map(function (d, i) { return [i * step, h - 3 - (d.count / max) * (h - 6)]; });
+    var line = pts.map(function (p, i) { return (i ? "L" : "M") + p[0].toFixed(1) + "," + p[1].toFixed(1); }).join("");
+    var root = svg("svg", { viewBox: "0 0 " + w + " " + h, preserveAspectRatio: "none", "aria-hidden": "true", focusable: "false" });
+    root.appendChild(svg("path", { d: line + "L" + w + "," + h + "L0," + h + "Z", class: "spark__area" }));
+    root.appendChild(svg("path", { d: line, class: "spark__line", pathLength: "1" }));
+    var last = pts[pts.length - 1];
+    root.appendChild(svg("circle", { cx: last[0], cy: last[1], r: 2.5, class: "spark__dot" }));
+    container.textContent = "";
+    container.appendChild(root);
+  }
+
+  // Share of each status; every part links to the filtered list
+  function renderStatusBar(container, byStatus) {
+    if (!container) { return; }
+    var order = [["new", "var(--status-new)"], ["in_progress", "var(--status-progress)"], ["done", "var(--status-done)"]];
+    var total = order.reduce(function (sum, o) { return sum + (byStatus[o[0]] || 0); }, 0);
+    container.textContent = "";
+    var track = el("div", "stack-bar__track");
+    track.setAttribute("aria-hidden", "true");
+    var legend = el("ul", "stack-bar__legend");
+    order.forEach(function (o, i) {
+      var n = byStatus[o[0]] || 0;
+      if (n) {
+        var seg = el("span", "stack-bar__seg");
+        seg.setAttribute("data-s", o[0]);
+        seg.style.setProperty("--n", n);
+        seg.style.setProperty("--seg", o[1]);
+        seg.style.setProperty("--d", i * 120 + "ms");
+        track.appendChild(seg);
+      }
+      var li = el("li");
+      var a = el("a", "stack-bar__item");
+      a.href = "index.html?status=" + o[0];
+      a.setAttribute("data-s", o[0]);
+      a.style.setProperty("--seg", o[1]);
+      a.appendChild(el("span", null, STATUS_LABELS[o[0]]));
+      a.appendChild(el("b", null, formatNumber(n)));
+      a.appendChild(el("small", null, total ? formatNumber(Math.round((n / total) * 100)) + "٪ از کل" : "—"));
+      li.appendChild(a);
+      legend.appendChild(li);
+    });
+    if (!total) { track.appendChild(el("span", "stack-bar__seg")); }
+    container.appendChild(track);
+    container.appendChild(legend);
+  }
+
+  // Course requests vs consultations as a donut; legend items link to the filtered list
+  function renderKindDonut(container, byKind) {
+    if (!container) { return; }
+    var parts = [["course_request", "donut__arc--course", "var(--tone-1)"], ["consultation", "donut__arc--consult", "var(--tone-3)"]];
+    var total = parts.reduce(function (sum, p) { return sum + (byKind[p[0]] || 0); }, 0);
+    var r = 52, c = 2 * Math.PI * r;
+    container.textContent = "";
+    var wrap = el("div", "donut__wrap");
+    var root = svg("svg", { viewBox: "0 0 140 140", class: "donut__svg", "aria-hidden": "true", focusable: "false" });
+    root.appendChild(svg("circle", { cx: 70, cy: 70, r: r, class: "donut__ring" }));
+    var offset = 0;
+    parts.forEach(function (p, i) {
+      var n = byKind[p[0]] || 0;
+      if (!n || !total) { return; }
+      var len = (n / total) * c;
+      var gap = total > n ? 2 : 0;
+      var arc = svg("circle", {
+        cx: 70, cy: 70, r: r, class: "donut__arc " + p[1],
+        "stroke-dasharray": Math.max(0, len - gap).toFixed(2) + " " + c.toFixed(2),
+        "stroke-dashoffset": (-offset).toFixed(2)
+      });
+      arc.style.setProperty("--d", i * 150 + "ms");
+      root.appendChild(arc);
+      offset += len;
+    });
+    wrap.appendChild(root);
+    var center = el("div", "donut__center");
+    center.appendChild(el("b", null, formatNumber(total)));
+    center.appendChild(el("span", null, "درخواست"));
+    wrap.appendChild(center);
+    container.appendChild(wrap);
+
+    var legend = el("ul", "donut__legend");
+    parts.forEach(function (p) {
+      var n = byKind[p[0]] || 0;
+      var li = el("li");
+      var a = el("a", "donut__item");
+      a.href = "index.html?kind=" + p[0];
+      a.setAttribute("data-k", p[0]);
+      var sw = el("span", "donut__swatch");
+      sw.style.setProperty("--seg", p[2]);
+      a.appendChild(sw);
+      var text = el("span");
+      text.appendChild(document.createTextNode(KIND_LABELS[p[0]]));
+      text.appendChild(document.createElement("br"));
+      text.appendChild(el("small", null, total ? formatNumber(Math.round((n / total) * 100)) + "٪" : "—"));
+      a.appendChild(text);
+      a.appendChild(el("b", null, formatNumber(n)));
+      li.appendChild(a);
+      legend.appendChild(li);
+    });
+    container.appendChild(legend);
+  }
+
   function initDashboard() {
     tooltip = document.getElementById("chart-tooltip");
     var alertBox = document.getElementById("dashboard-alert");
     var dailyEl = document.getElementById("daily-chart");
     var dailyTable = document.getElementById("daily-table");
     var courseEl = document.getElementById("course-chart");
+    var summaryEl = document.querySelector("[data-chart-summary]");
+    var subEl = document.querySelector("[data-chart-sub]");
+    var rangeBtns = document.querySelectorAll("[data-range]");
+    var range = 30;
     var stats = null;
 
     function kpi(name, value) {
@@ -429,9 +619,51 @@
       kpiMeta("kind", formatNumber(stats.by_kind.course_request) + " درخواست دوره، " +
         formatNumber(stats.by_kind.consultation) + " مشاوره");
 
-      renderDailyChart(dailyEl, stats.daily, true);
-      renderDailyTable(dailyTable, stats.daily);
+      renderRange(true);
+      renderSpark(document.querySelector('[data-spark="week"]'), stats.daily.slice(-14));
+      renderStatusBar(document.querySelector("[data-status-bar]"), stats.by_status);
+      renderKindDonut(document.querySelector("[data-kind-donut]"), stats.by_kind);
     }
+
+    // 7-day trailing average over the full 30 days, then sliced with the bars
+    function movingAverage(daily) {
+      return daily.map(function (d, i) {
+        var from = Math.max(0, i - 6);
+        var slice = daily.slice(from, i + 1);
+        return slice.reduce(function (sum, x) { return sum + x.count; }, 0) / slice.length;
+      });
+    }
+
+    function renderRange(animate) {
+      var daily = stats.daily.slice(-range);
+      var avg = range >= 14 ? movingAverage(stats.daily).slice(-range) : null;
+      renderDailyChart(dailyEl, daily, animate, avg);
+      renderDailyTable(dailyTable, daily);
+      subEl.textContent = "تعداد درخواست‌های ثبت‌شده در هر روز، " + formatNumber(range) + " روز گذشته" +
+        (avg ? " · خط طلایی: میانگین ۷ روزه" : "");
+
+      var total = daily.reduce(function (sum, d) { return sum + d.count; }, 0);
+      var busiest = daily.reduce(function (best, d) { return d.count > best.count ? d : best; }, daily[0]);
+      summaryEl.textContent = "";
+      [
+        ["مجموع", formatNumber(total)],
+        ["میانگین روزانه", numberFormat.format(Math.round((total / daily.length) * 10) / 10)],
+        ["پرکارترین روز", busiest && busiest.count ? dayFormat.format(new Date(busiest.day + "T12:00:00")) + " (" + formatNumber(busiest.count) + ")" : "—"]
+      ].forEach(function (pair) {
+        var wrap = el("div");
+        wrap.appendChild(el("dt", null, pair[0]));
+        wrap.appendChild(el("dd", null, pair[1]));
+        summaryEl.appendChild(wrap);
+      });
+    }
+
+    rangeBtns.forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        range = Number(btn.getAttribute("data-range"));
+        rangeBtns.forEach(function (b) { b.setAttribute("aria-pressed", String(b === btn)); });
+        if (stats) { renderRange(true); }
+      });
+    });
 
     Promise.all([api("/api/admin/stats"), api("/api/catalog")])
       .then(function (results) {
@@ -448,7 +680,7 @@
       })
       .catch(function () {
         // Don't leave placeholders shimmering forever
-        document.querySelectorAll("#kpis .skeleton, #daily-chart .skeleton, #course-chart .skeleton").forEach(function (node) {
+        document.querySelectorAll("#kpis .skeleton, #daily-chart .skeleton, #course-chart .skeleton, [data-status-bar] .skeleton, [data-kind-donut] .skeleton").forEach(function (node) {
           node.replaceWith(node.closest(".kpi") ? "—" : "");
         });
         showAlert(alertBox);
@@ -465,21 +697,46 @@
     var resizeTimer = null;
     window.addEventListener("resize", function () {
       clearTimeout(resizeTimer);
-      resizeTimer = setTimeout(function () { if (stats) { renderDailyChart(dailyEl, stats.daily); } }, 150);
+      resizeTimer = setTimeout(function () { if (stats) { renderRange(false); } }, 150);
     });
     window.addEventListener("scroll", hideTooltip, { passive: true });
   }
 
-  // ---------- Ticket list ----------
+  // ---------- Ticket list: table / board + drawer ----------
+  var VIEW_KEY = "tara-tickets-view";
+  var relFormat = window.Intl && Intl.RelativeTimeFormat ? new Intl.RelativeTimeFormat("fa", { numeric: "auto" }) : null;
+
+  function initials(name) { return (name || "").trim().charAt(0) || "؟"; }
+
+  // «۵ دقیقه پیش», «دیروز» … for board cards; falls back to the full date
+  function ago(iso) {
+    if (!relFormat || !iso) { return formatDate(iso); }
+    var diff = (new Date(iso).getTime() - Date.now()) / 1000;
+    var abs = Math.abs(diff);
+    if (abs < 60) { return "همین حالا"; }
+    if (abs < 3600) { return relFormat.format(Math.round(diff / 60), "minute"); }
+    if (abs < 86400) { return relFormat.format(Math.round(diff / 3600), "hour"); }
+    if (abs < 86400 * 30) { return relFormat.format(Math.round(diff / 86400), "day"); }
+    return formatDate(iso);
+  }
+
+  function plainClick(event) {
+    return event.button === 0 && !event.metaKey && !event.ctrlKey && !event.shiftKey && !event.altKey;
+  }
+
   function initList() {
+    var storedView = null;
+    try { storedView = localStorage.getItem(VIEW_KEY); } catch (e) {}
     var state = {
       status: queryParam("status") || "",
-      kind: "",
+      kind: queryParam("kind") || "",
       assigned: queryParam("assigned") || "",
       course: "",
       q: "",
-      page: 1
+      page: 1,
+      view: queryParam("view") || storedView || "table"
     };
+    if (state.view !== "board") { state.view = "table"; }
     var body = document.getElementById("tickets-body");
     var alertBox = document.getElementById("list-alert");
     var kindSelect = document.getElementById("filter-kind");
@@ -489,9 +746,17 @@
     var exportLink = document.getElementById("export-link");
     var tabs = document.querySelectorAll(".tabs__btn");
     var pagination = document.getElementById("pagination");
+    var boardEl = document.getElementById("board");
+    var boardLive = document.getElementById("board-live");
+    var viewBtns = document.querySelectorAll("[data-view]");
+    var main = document.querySelector(".app-content") || document.body;
     var searchTimer = null;
+    var orderIds = [];   // what the drawer's previous/next walk through
+    var byId = {};       // last seen version of each ticket
+    var drawer = null;   // set up below
 
     assignedSelect.value = state.assigned;
+    kindSelect.value = state.kind;
     tabs.forEach(function (t) { t.setAttribute("aria-pressed", String(t.getAttribute("data-status") === state.status)); });
 
     api("/api/catalog").then(function (catalog) {
@@ -508,16 +773,20 @@
       return td;
     }
 
-    function params(withPage) {
+    function params(withPage, overrides) {
       var p = new URLSearchParams();
+      var s = Object.assign({}, state, overrides || {});
       ["status", "kind", "assigned", "course", "q"].forEach(function (key) {
-        if (state[key]) { p.set(key, state[key]); }
+        if (s[key]) { p.set(key, s[key]); }
       });
-      if (withPage) { p.set("page", String(state.page)); }
+      if (withPage) { p.set("page", String(s.page)); }
       return p;
     }
 
-    function render(data) {
+    function remember(items) { items.forEach(function (t) { byId[t.id] = t; }); }
+
+    // ----- Table -----
+    function renderTable(data) {
       body.textContent = "";
 
       var all = data.counts.new + data.counts.in_progress + data.counts.done;
@@ -536,18 +805,32 @@
         body.appendChild(empty);
       }
 
+      remember(data.items);
+      orderIds = data.items.map(function (t) { return t.id; });
+
       data.items.forEach(function (ticket, index) {
         var href = "ticket.html?id=" + ticket.id;
         var row = document.createElement("tr");
+        row.setAttribute("data-ticket-id", ticket.id);
         enter(row, index);
-        row.addEventListener("click", function (event) {
-          if (event.target.tagName !== "A") { window.location.href = href; }
-        });
+        if (drawer && drawer.currentId() === ticket.id) { row.classList.add("is-selected"); }
 
         var link = document.createElement("a");
         link.href = href;
         link.dir = "ltr";
         link.textContent = ticket.tracking_code;
+        // A plain click opens the side drawer; modifier clicks still open the full page
+        link.addEventListener("click", function (event) {
+          if (!plainClick(event)) { return; }
+          event.preventDefault();
+          drawer.open(ticket.id, link);
+        });
+        row.addEventListener("click", function (event) {
+          if (event.target.closest("a")) { return; }
+          if (!plainClick(event)) { window.open(href, "_blank"); return; }
+          drawer.open(ticket.id, link);
+        });
+
         cell(row, "کد پیگیری", link);
         cell(row, "تاریخ", formatDate(ticket.created_at));
         cell(row, "متقاضی", fullName(ticket));
@@ -570,18 +853,194 @@
       pagination.querySelector("[data-page-next]").disabled = data.page >= pages;
     }
 
-    skeletonRows(body, 8);
+    // ----- Board -----
+    var STATUSES = ["new", "in_progress", "done"];
+    var dragging = null;
 
+    function columnList(status) { return boardEl.querySelector('[data-board-list="' + status + '"]'); }
+
+    function setColumnCount(status, n) {
+      boardEl.querySelector('[data-board-count="' + status + '"]').textContent = formatNumber(n);
+    }
+
+    function emptyNote(list) {
+      var hasCards = list.querySelector(".board-card");
+      var note = list.querySelector(".board-col__empty");
+      if (!hasCards && !note) {
+        var li = el("li", "board-col__empty", "درخواستی در این ستون نیست.");
+        li.setAttribute("aria-hidden", "true");
+        list.appendChild(li);
+      } else if (hasCards && note) {
+        note.remove();
+      }
+    }
+
+    function boardCard(ticket) {
+      var li = el("li", "board-card");
+      li.draggable = true;
+      li.setAttribute("data-ticket-id", ticket.id);
+      li.setAttribute("data-status", ticket.status);
+
+      var top = el("div", "board-card__top");
+      var open = el("button", "board-card__code");
+      open.type = "button";
+      open.appendChild(ltr(ticket.tracking_code));
+      open.setAttribute("aria-label", "باز کردن درخواست " + ticket.tracking_code + " — " + fullName(ticket));
+      open.addEventListener("click", function () { drawer.open(ticket.id, open); });
+      top.appendChild(open);
+      top.appendChild(el("span", "board-card__kind", KIND_LABELS[ticket.kind]));
+      li.appendChild(top);
+
+      li.appendChild(el("p", "board-card__name", fullName(ticket)));
+      li.appendChild(el("p", "board-card__subject", subject(ticket)));
+
+      var foot = el("div", "board-card__foot");
+      var avatar = el("span", "board-card__avatar" + (ticket.assigned_name ? "" : " board-card__avatar--none"),
+        ticket.assigned_name ? initials(ticket.assigned_name) : "؟");
+      avatar.title = ticket.assigned_name ? "مسئول: " + ticket.assigned_name : "بدون مسئول";
+      foot.appendChild(avatar);
+      foot.appendChild(el("span", null, ago(ticket.created_at)));
+
+      // Keyboard / touch alternative to dragging
+      var move = el("select", "board-card__move");
+      move.setAttribute("aria-label", "تغییر وضعیت " + ticket.tracking_code);
+      STATUSES.forEach(function (s) { addOption(move, s, STATUS_LABELS[s]); });
+      move.value = ticket.status;
+      move.addEventListener("click", function (event) { event.stopPropagation(); });
+      move.addEventListener("change", function () { moveTicket(ticket.id, move.value); });
+      foot.appendChild(move);
+      li.appendChild(foot);
+
+      li.addEventListener("click", function (event) {
+        if (event.target.closest("select, button")) { return; }
+        drawer.open(ticket.id, open);
+      });
+      li.addEventListener("dragstart", function (event) {
+        dragging = { id: ticket.id, from: li.getAttribute("data-status") };
+        event.dataTransfer.effectAllowed = "move";
+        event.dataTransfer.setData("text/plain", String(ticket.id));
+        window.requestAnimationFrame(function () { li.classList.add("is-dragging"); });
+      });
+      li.addEventListener("dragend", function () {
+        li.classList.remove("is-dragging");
+        dragging = null;
+        boardEl.querySelectorAll(".is-drop-target").forEach(function (c) { c.classList.remove("is-drop-target"); });
+      });
+      return li;
+    }
+
+    function renderBoard(results) {
+      orderIds = [];
+      STATUSES.forEach(function (status, i) {
+        var data = results[i];
+        var list = columnList(status);
+        list.textContent = "";
+        remember(data.items);
+        data.items.forEach(function (ticket, index) {
+          var card = boardCard(ticket);
+          enter(card, index);
+          list.appendChild(card);
+          orderIds.push(ticket.id);
+        });
+        emptyNote(list);
+        setColumnCount(status, data.total);
+        var more = boardEl.querySelector('[data-board-more="' + status + '"]');
+        var hiddenCount = data.total - data.items.length;
+        more.hidden = hiddenCount <= 0;
+        if (hiddenCount > 0) {
+          more.textContent = "و " + formatNumber(hiddenCount) + " درخواست دیگر — نمایش در جدول";
+          more.href = "index.html?" + params(false, { status: status }).toString() + "&view=table";
+        }
+      });
+    }
+
+    function columnCount(status) {
+      var node = boardEl.querySelector('[data-board-count="' + status + '"]');
+      return parseInt(node.textContent.replace(/[۰-۹]/g, function (d) { return "۰۱۲۳۴۵۶۷۸۹".indexOf(d); }), 10) || 0;
+    }
+
+    function moveTicket(id, to) {
+      var card = boardEl.querySelector('.board-card[data-ticket-id="' + id + '"]');
+      if (!card) { return; }
+      var from = card.getAttribute("data-status");
+      if (from === to) { return; }
+      var fromList = card.parentNode;
+      var nextSibling = card.nextSibling;
+      var toList = columnList(to);
+
+      // Optimistic move; undone if the server refuses
+      toList.insertBefore(card, toList.firstChild);
+      card.setAttribute("data-status", to);
+      card.classList.add("is-saving");
+      emptyNote(fromList); emptyNote(toList);
+      setColumnCount(from, columnCount(from) - 1);
+      setColumnCount(to, columnCount(to) + 1);
+
+      api("/api/admin/tickets/" + id, { method: "PATCH", body: JSON.stringify({ status: to }) })
+        .then(function (ticket) {
+          byId[ticket.id] = ticket;
+          var fresh = boardCard(ticket);
+          card.replaceWith(fresh);
+          replay(fresh, "is-landed");
+          boardLive.textContent = "«" + ticket.tracking_code + "» به ستون «" + STATUS_LABELS[to] + "» منتقل شد.";
+          refreshNavNew();
+          if (drawer.currentId() === ticket.id) { drawer.refresh(ticket); }
+        })
+        .catch(function () {
+          fromList.insertBefore(card, nextSibling && nextSibling.parentNode === fromList ? nextSibling : null);
+          card.setAttribute("data-status", from);
+          card.classList.remove("is-saving");
+          card.querySelector(".board-card__move").value = from;
+          emptyNote(fromList); emptyNote(toList);
+          setColumnCount(from, columnCount(from) + 1);
+          setColumnCount(to, columnCount(to) - 1);
+          showAlert(alertBox, "تغییر وضعیت ناموفق بود؛ لطفاً دوباره تلاش کنید.");
+        });
+    }
+
+    boardEl.querySelectorAll(".board-col").forEach(function (col) {
+      var status = col.getAttribute("data-board-status");
+      col.addEventListener("dragover", function (event) {
+        if (!dragging || dragging.from === status) { return; }
+        event.preventDefault();
+        event.dataTransfer.dropEffect = "move";
+        col.classList.add("is-drop-target");
+      });
+      col.addEventListener("dragleave", function (event) {
+        if (!col.contains(event.relatedTarget)) { col.classList.remove("is-drop-target"); }
+      });
+      col.addEventListener("drop", function (event) {
+        event.preventDefault();
+        col.classList.remove("is-drop-target");
+        if (dragging && dragging.from !== status) { moveTicket(dragging.id, status); }
+      });
+    });
+
+    // ----- Loading -----
     function load() {
       alertBox.hidden = true;
       var exportParams = params(false).toString();
       exportLink.href = "/api/admin/tickets/export.csv" + (exportParams ? "?" + exportParams : "");
-      api("/api/admin/tickets?" + params(true).toString())
-        .then(render)
+      if (state.view === "board") {
+        return Promise.all(STATUSES.map(function (s) {
+          return api("/api/admin/tickets?" + params(false, { status: s }).toString());
+        })).then(renderBoard).catch(function () { showAlert(alertBox); });
+      }
+      return api("/api/admin/tickets?" + params(true).toString())
+        .then(renderTable)
         .catch(function () {
           body.querySelectorAll(".skeleton-row").forEach(function (row) { row.remove(); });
           showAlert(alertBox);
         });
+    }
+
+    function setView(view) {
+      state.view = view;
+      viewBtns.forEach(function (b) { b.setAttribute("aria-pressed", String(b.getAttribute("data-view") === view)); });
+      main.classList.toggle("is-board", view === "board");
+      boardEl.hidden = view !== "board";
+      try { localStorage.setItem(VIEW_KEY, view); } catch (e) {}
+      if (view === "table") { skeletonRows(body, 7); }
     }
 
     function filterChanged(key, value) {
@@ -590,6 +1049,13 @@
       load();
     }
 
+    viewBtns.forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        if (btn.getAttribute("data-view") === state.view) { return; }
+        setView(btn.getAttribute("data-view"));
+        load();
+      });
+    });
     tabs.forEach(function (tab) {
       tab.addEventListener("click", function () {
         tabs.forEach(function (t) { t.setAttribute("aria-pressed", String(t === tab)); });
@@ -607,7 +1073,236 @@
     pagination.querySelector("[data-page-prev]").addEventListener("click", function () { state.page -= 1; load(); });
     pagination.querySelector("[data-page-next]").addEventListener("click", function () { state.page += 1; load(); });
 
-    load();
+    drawer = initDrawer({
+      order: function () { return orderIds; },
+      cached: function (id) { return byId[id]; },
+      onSaved: function (ticket) { byId[ticket.id] = ticket; load(); refreshNavNew(); },
+      onSelect: function (id) {
+        document.querySelectorAll("[data-ticket-id].is-selected").forEach(function (n) { n.classList.remove("is-selected"); });
+        if (id) {
+          var row = document.querySelector('tr[data-ticket-id="' + id + '"]');
+          if (row) { row.classList.add("is-selected"); }
+        }
+      }
+    });
+
+    setView(state.view);
+    load().then(function () {
+      // Deep link: index.html?ticket=123 opens that ticket in the drawer
+      var deep = queryParam("ticket");
+      if (deep && /^\d+$/.test(deep)) { drawer.open(Number(deep)); }
+    });
+  }
+
+  // ---------- Ticket drawer (side panel on the list page) ----------
+  function initDrawer(hooks) {
+    var dialog = document.getElementById("ticket-drawer");
+    var form = document.getElementById("drawer-form");
+    var saveBtn = dialog.querySelector("[data-drawer-save]");
+    var statusEl = dialog.querySelector("[data-drawer-status]");
+    var alertEl = dialog.querySelector("[data-drawer-alert]");
+    var assignSelect = form.elements.assigned_to;
+    var timeline = dialog.querySelector("[data-drawer-timeline]");
+    var bodyEl = dialog.querySelector("[data-drawer-body]");
+    var current = null;   // ticket being shown
+    var opener = null;
+    var requestId = 0;
+    var optionsReady = api("/api/admin/supervisors/options").then(function (options) {
+      options.forEach(function (s) { addOption(assignSelect, String(s.id), s.display_name); });
+    }).catch(function () {});
+
+    function d(name) { return dialog.querySelector('[data-d="' + name + '"]'); }
+
+    function formValues() {
+      var checked = form.querySelector('input[name="status"]:checked');
+      return {
+        status: checked ? checked.value : current.status,
+        note: form.elements.note.value,
+        assigned_to: assignSelect.value ? Number(assignSelect.value) : null
+      };
+    }
+
+    function isDirty() {
+      if (!current) { return false; }
+      var v = formValues();
+      return v.status !== current.status || v.note !== current.note || v.assigned_to !== (current.assigned_to || null);
+    }
+
+    function syncDirty() {
+      var dirty = isDirty();
+      dialog.classList.toggle("is-dirty", dirty);
+      saveBtn.disabled = !dirty;
+      if (dirty) { statusEl.textContent = "تغییرات ذخیره‌نشده"; } else if (statusEl.textContent === "تغییرات ذخیره‌نشده") { statusEl.textContent = ""; }
+    }
+
+    function fill(ticket) {
+      current = ticket;
+      d("tracking_code").textContent = ticket.tracking_code;
+      d("kind").textContent = KIND_LABELS[ticket.kind];
+      setBadge(d("status"), ticket.status);
+      d("subject").textContent = subject(ticket);
+      d("created_at").textContent = formatDate(ticket.created_at);
+      d("full_name").textContent = fullName(ticket);
+      d("phone").textContent = ticket.phone;
+      d("phone").href = "tel:" + ticket.phone;
+      d("national_id").textContent = ticket.national_id || "—";
+      d("company").textContent = ticket.company || "—";
+      d("instructor_name").textContent = ticket.instructor_name || "—";
+      d("updated").textContent = formatDate(ticket.updated_at) + (ticket.updated_by ? " · " + ticket.updated_by : "");
+      d("message").textContent = ticket.message;
+      dialog.querySelectorAll("[data-dkind]").forEach(function (n) { n.hidden = n.getAttribute("data-dkind") !== ticket.kind; });
+
+      form.querySelectorAll('input[name="status"]').forEach(function (r) { r.checked = r.value === ticket.status; });
+      form.elements.note.value = ticket.note || "";
+      if (ticket.assigned_to && !assignSelect.querySelector('option[value="' + ticket.assigned_to + '"]')) {
+        addOption(assignSelect, String(ticket.assigned_to), (ticket.assigned_name || "سرپرست") + " (غیرفعال)");
+      }
+      assignSelect.value = ticket.assigned_to ? String(ticket.assigned_to) : "";
+      dialog.querySelector("[data-drawer-open-page]").href = "ticket.html?id=" + ticket.id;
+      syncDirty();
+    }
+
+    function renderTimeline(events, ticket) {
+      timeline.textContent = "";
+      events.forEach(function (e, index) {
+        var item = el("li", "timeline__item");
+        enter(item, index);
+        item.appendChild(el("span", "timeline__text", describeEvent(e)));
+        item.appendChild(el("span", "timeline__time", formatDate(e.created_at)));
+        timeline.appendChild(item);
+      });
+      var created = el("li", "timeline__item timeline__item--start");
+      created.appendChild(el("span", "timeline__text",
+        ticket.kind === "consultation" ? "درخواست مشاوره از سایت ثبت شد" : "درخواست دوره از سایت ثبت شد"));
+      created.appendChild(el("span", "timeline__time", formatDate(ticket.created_at)));
+      timeline.appendChild(created);
+    }
+
+    function updatePosition(id) {
+      var order = hooks.order();
+      var i = order.indexOf(id);
+      var pos = dialog.querySelector("[data-drawer-pos]");
+      pos.textContent = i >= 0 ? formatNumber(i + 1) + " از " + formatNumber(order.length) : "";
+      dialog.querySelector("[data-drawer-prev]").disabled = i <= 0;
+      dialog.querySelector("[data-drawer-next]").disabled = i < 0 || i >= order.length - 1;
+    }
+
+    function setUrl(id) {
+      try {
+        var url = new URL(window.location.href);
+        if (id) { url.searchParams.set("ticket", id); } else { url.searchParams.delete("ticket"); }
+        window.history.replaceState(null, "", url.toString());
+      } catch (e) {}
+    }
+
+    function load(id) {
+      var mine = ++requestId;
+      alertEl.hidden = true;
+      statusEl.textContent = "";
+      dialog.classList.add("is-loading");
+      var cached = hooks.cached(id);
+      if (cached) { fill(cached); }
+      updatePosition(id);
+      hooks.onSelect(id);
+      setUrl(id);
+      bodyEl.scrollTop = 0;
+      return optionsReady.then(function () {
+        return Promise.all([api("/api/admin/tickets/" + id), api("/api/admin/tickets/" + id + "/events")]);
+      }).then(function (results) {
+        if (mine !== requestId) { return; }
+        fill(results[0]);
+        renderTimeline(results[1], results[0]);
+      }).catch(function (err) {
+        if (mine !== requestId) { return; }
+        showAlert(alertEl, err.status === 404 ? "این درخواست پیدا نشد." : "دریافت درخواست ناموفق بود.");
+      }).then(function () {
+        if (mine === requestId) { dialog.classList.remove("is-loading"); }
+      });
+    }
+
+    function confirmLeave() {
+      return !isDirty() || window.confirm("تغییرات ذخیره‌نشده از بین می‌رود. ادامه می‌دهید؟");
+    }
+
+    function open(id, trigger) {
+      if (current && current.id === id && dialog.open) { return; }
+      if (dialog.open && !confirmLeave()) { return; }
+      if (trigger) { opener = trigger; }
+      if (!dialog.open) {
+        current = null;
+        dialog.showModal();
+        document.body.classList.add("has-dialog");
+      }
+      load(id);
+    }
+
+    function step(dir) {
+      if (!current || !confirmLeave()) { return; }
+      var order = hooks.order();
+      var i = order.indexOf(current.id);
+      var next = order[i + dir];
+      if (next !== undefined) { current = null; load(next); }
+    }
+
+    dialog.querySelector("[data-drawer-close]").addEventListener("click", function () {
+      if (confirmLeave()) { dialog.close(); }
+    });
+    dialog.querySelector("[data-drawer-prev]").addEventListener("click", function () { step(-1); });
+    dialog.querySelector("[data-drawer-next]").addEventListener("click", function () { step(1); });
+    dialog.querySelector("[data-drawer-assign-me]").addEventListener("click", function () {
+      if (me) { assignSelect.value = String(me.id); syncDirty(); }
+    });
+    dialog.addEventListener("click", function (event) {
+      if (event.target === dialog && confirmLeave()) { dialog.close(); }
+    });
+    dialog.addEventListener("cancel", function (event) {
+      if (!confirmLeave()) { event.preventDefault(); }
+    });
+    dialog.addEventListener("close", function () {
+      document.body.classList.remove("has-dialog");
+      hooks.onSelect(null);
+      setUrl(null);
+      current = null;
+      requestId++;
+      if (opener && document.contains(opener)) { opener.focus(); }
+    });
+    form.addEventListener("input", syncDirty);
+    form.addEventListener("change", syncDirty);
+
+    form.addEventListener("submit", function (event) {
+      event.preventDefault();
+      if (!current || !isDirty()) { return; }
+      var id = current.id;
+      saveBtn.disabled = true;
+      statusEl.textContent = "در حال ذخیره…";
+      api("/api/admin/tickets/" + id, { method: "PATCH", body: JSON.stringify(formValues()) })
+        .then(function (ticket) {
+          fill(ticket);
+          flash(statusEl, "تغییرات ذخیره شد.");
+          hooks.onSaved(ticket);
+          return api("/api/admin/tickets/" + id + "/events").then(function (events) { renderTimeline(events, ticket); });
+        })
+        .catch(function (err) {
+          statusEl.textContent = err.errors && err.errors.assigned_to
+            ? "این سرپرست غیرفعال است؛ مسئول دیگری انتخاب کنید."
+            : "ذخیره ناموفق بود؛ لطفاً دوباره تلاش کنید.";
+          syncDirty();
+        });
+    });
+
+    // Ctrl/⌘ + Enter saves from anywhere in the drawer
+    dialog.addEventListener("keydown", function (event) {
+      if (event.key === "Enter" && (event.ctrlKey || event.metaKey)) {
+        event.preventDefault();
+        if (typeof form.requestSubmit === "function") { form.requestSubmit(); } else { form.dispatchEvent(new Event("submit", { cancelable: true })); }
+      }
+    });
+
+    return {
+      open: open,
+      currentId: function () { return current ? current.id : null; },
+      refresh: function (ticket) { if (!isDirty()) { fill(ticket); } }
+    };
   }
 
   // ---------- Ticket detail ----------
@@ -1223,6 +1918,7 @@
   if (page === "login") {
     initLogin();
   } else {
+    initShell();
     initHeader().then(function () {
       if (page === "dashboard") { initDashboard(); }
       if (page === "list") { initList(); }

@@ -7,11 +7,33 @@
 <meta name="description" content="آکادمی تارا؛ ارائه‌دهنده دوره‌های آموزش سازمانی در حسابداری، هوش مصنوعی برای مدیران و توسعه مهارت‌های کسب‌وکار.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/variables.css">
-<link rel="stylesheet" href="assets/css/base.css">
-<link rel="stylesheet" href="assets/css/components.css">
+<link rel="stylesheet" href="assets/css/variables.css?v=20261029">
+<link rel="stylesheet" href="assets/css/base.css?v=20261029">
+<link rel="stylesheet" href="assets/css/components.css?v=20261029">
+<link rel="stylesheet" href="assets/css/home-motion.css?v=20261029">
+<link rel="stylesheet" href="assets/css/home-editorial.css?v=20261029">
 </head>
-<body>
+<body class="page-home">
+<svg class="icon-sprite" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+  <symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5"/></symbol>
+  <symbol id="i-users" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6"/><path d="M16 4.6a3.5 3.5 0 0 1 0 6.8"/><path d="M18 14.3c2.1.7 3.5 2.8 3.5 5.7"/></symbol>
+  <symbol id="i-building" viewBox="0 0 24 24"><path d="M4 21V5a1 1 0 0 1 1-1h9a1 1 0 0 1 1 1v16"/><path d="M15 9h4a1 1 0 0 1 1 1v11"/><path d="M2 21h20"/><path d="M8 8h3M8 12h3M8 16h3"/></symbol>
+  <symbol id="i-send" viewBox="0 0 24 24"><path d="M21 3 10 14"/><path d="M21 3 14.5 21l-4.5-7-7-4.5z"/></symbol>
+  <symbol id="i-chat" viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/><path d="M8 9.5h8M8 12.5h5"/></symbol>
+  <symbol id="i-board" viewBox="0 0 24 24"><path d="M3 4h18"/><path d="M4.5 4v10h15V4"/><path d="M12 14v3"/><path d="m8 21 4-4 4 4"/></symbol>
+  <symbol id="i-award" viewBox="0 0 24 24"><circle cx="12" cy="9" r="6"/><path d="m8.5 14-1.5 7 5-2.5 5 2.5-1.5-7"/></symbol>
+  <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+  <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></symbol>
+  <symbol id="i-level" viewBox="0 0 24 24"><path d="M5 20v-4M10 20v-8M15 20V8M20 20V4"/></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></symbol>
+  <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M19 12H5"/><path d="m11 18-6-6 6-6"/></symbol>
+  <symbol id="i-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+  <symbol id="i-camera" viewBox="0 0 24 24"><path d="M3 8a2 2 0 0 1 2-2h2.5l1.5-2h6l1.5 2H19a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><circle cx="12" cy="13" r="3.5"/></symbol>
+  <symbol id="i-chev-right" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></symbol>
+  <symbol id="i-chev-left" viewBox="0 0 24 24"><path d="m15 6-6 6 6 6"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 5 5 9-10"/></symbol>
+</svg>
 
 <header class="site-header">
   <div class="container site-header__inner">
@@ -37,11 +59,25 @@
 <main>
 
   <!-- HERO -->
-  <section class="hero">
+  <section class="hero" data-hero>
+    <div class="hero__bg" aria-hidden="true">
+      <canvas class="hero__silk" data-hero-silk></canvas>
+      <div class="hero__bg-layer">
+        <div class="hero__blob hero__blob--1"></div>
+        <div class="hero__blob hero__blob--2"></div>
+        <div class="hero__blob hero__blob--3"></div>
+        <div class="hero__grid-lines"></div>
+        <svg class="hero__lines" viewBox="0 0 1440 640" preserveAspectRatio="none" focusable="false">
+          <path pathLength="1" d="M1480 100 C1140 70 860 170 520 140 S120 100 -40 120"/>
+          <path pathLength="1" d="M1480 560 C1120 520 820 590 480 545 S100 500 -40 525"/>
+        </svg>
+      </div>
+      <div class="hero__spot" data-hero-spot></div>
+    </div>
     <div class="container hero__grid">
       <div>
         <span class="eyebrow">آموزش سازمانی تخصصی</span>
-        <h1 class="hero__title">مهارت‌های آینده را برای تیم‌ خود بسازید</h1>
+        <h1 class="hero__title"><span class="hero__mark">مهارت‌های آینده</span> را برای تیم‌ خود بسازید</h1>
         <p class="hero__lead">
           تارا با ارائه دوره‌های تخصصی حسابداری، هوش مصنوعی برای مدیران و توسعه سازمانی،
           به شرکت‌ها کمک می‌کند تا تیم‌های خود را برای چالش‌های امروز و فردا آماده کنند.
@@ -67,6 +103,21 @@
         </div>
       </div>
       <div class="hero-slider" role="region" aria-roledescription="اسلایدر" aria-label="تصاویر دوره‌های تارا" data-slider>
+        <div class="hero-slider__frame" aria-hidden="true"></div>
+        <div class="hero-slider__dotgrid" aria-hidden="true"></div>
+        <div class="hero-float hero-float--team" aria-hidden="true">
+          <span class="hero-float__avatars">
+            <img src="assets/img/optimized/instructor-sara.webp" alt="" width="32" height="32">
+            <img src="assets/img/optimized/instructor-hossein.webp" alt="" width="32" height="32">
+            <img src="assets/img/optimized/instructor-mina.webp" alt="" width="32" height="32">
+            <img src="assets/img/optimized/instructor-reza.webp" alt="" width="32" height="32">
+          </span>
+          <span class="hero-float__text"><b>۴ مدرس متخصص</b><span>از صنعت و دانشگاه</span></span>
+        </div>
+        <div class="hero-float hero-float--course" data-hero-float aria-hidden="true" hidden>
+          <span class="hero-float__avatars" data-float-avatars></span>
+          <span class="hero-float__text"><b data-float-name></b><span data-float-meta></span></span>
+        </div>
         <div class="hero__art hero-slider__track" aria-live="off">
           <div class="hero-slider__slide is-active" role="group" aria-roledescription="اسلاید" aria-label="۱ از ۷">
             <img src="assets/img/optimized/hero-workshop.webp" fetchpriority="high" alt="کارگاه آموزشی تارا برای تیم‌های سازمانی" decoding="async">
@@ -105,7 +156,7 @@
   </section>
 
   <div class="container">
-    <div class="logo-strip" data-reveal>
+    <div class="logo-strip" data-reveal-stagger>
       <span>مورد اعتماد سازمان‌ها</span>
       <span>گروه صنعتی آرمان</span>
       <span>بانک توسعه</span>
@@ -116,11 +167,11 @@
   </div>
 
   <!-- ABOUT -->
-  <section class="section" id="about">
-    <div class="container">
-      <div class="section-head" data-reveal>
+  <section class="section about" id="about">
+    <div class="container about__grid">
+      <div class="section-head section-head--stack" data-reveal>
         <div>
-          <span class="eyebrow">درباره تارا</span>
+          <span class="eyebrow"><span class="eyebrow__num">۰۱</span>درباره تارا</span>
           <h2>یادگیری سازمانی، طراحی‌شده برای نتیجه</h2>
         </div>
         <p>
@@ -129,29 +180,32 @@
         </p>
       </div>
 
-      <div class="grid grid--3" data-reveal-stagger>
-        <div class="feature">
-          <div class="feature__icon">🎯</div>
+      <ol class="about__list" data-reveal-stagger>
+        <li class="feature">
+          <span class="feature__icon"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-target"/></svg></span>
           <div>
-            <h4 class="feature__title">محتوای کاربردی</h4>
+            <h3 class="feature__title">محتوای کاربردی</h3>
             <p class="feature__desc">سرفصل‌های هر دوره بر اساس نیاز واقعی مدیران و کارشناسان سازمانی طراحی می‌شود.</p>
           </div>
-        </div>
-        <div class="feature">
-          <div class="feature__icon">👥</div>
+          <span class="feature__num" aria-hidden="true">۰۱</span>
+        </li>
+        <li class="feature">
+          <span class="feature__icon"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-users"/></svg></span>
           <div>
-            <h4 class="feature__title">مدرسان مجرب</h4>
+            <h3 class="feature__title">مدرسان مجرب</h3>
             <p class="feature__desc">مدرسان تارا ترکیبی از تجربه اجرایی و سابقه تدریس در سطح سازمانی دارند.</p>
           </div>
-        </div>
-        <div class="feature">
-          <div class="feature__icon">🏢</div>
+          <span class="feature__num" aria-hidden="true">۰۲</span>
+        </li>
+        <li class="feature">
+          <span class="feature__icon"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-building"/></svg></span>
           <div>
-            <h4 class="feature__title">راهکار سازمانی</h4>
+            <h3 class="feature__title">راهکار سازمانی</h3>
             <p class="feature__desc">امکان برگزاری دوره‌های اختصاصی درون‌سازمانی متناسب با اهداف تیم شما.</p>
           </div>
-        </div>
-      </div>
+          <span class="feature__num" aria-hidden="true">۰۳</span>
+        </li>
+      </ol>
     </div>
   </section>
 
@@ -160,10 +214,16 @@
     <div class="container">
       <div class="section-head" data-reveal>
         <div>
-          <span class="eyebrow">دوره‌های آموزشی</span>
+          <span class="eyebrow"><span class="eyebrow__num">۰۲</span>دوره‌های آموزشی</span>
           <h2>دوره‌های پرطرفدار سازمانی</h2>
         </div>
         <p>از حسابداری مدیریتی تا به‌کارگیری هوش مصنوعی در تصمیم‌گیری؛ دوره‌ای متناسب با نیاز تیم خود پیدا کنید.</p>
+      </div>
+
+      <div class="catalog-glance" data-catalog-glance hidden>
+        <h3 class="catalog-glance__title" id="glance-title">این فهرست در یک نگاه</h3>
+        <dl class="catalog-glance__stats" data-glance-stats></dl>
+        <div class="catalog-glance__bar" role="group" aria-labelledby="glance-title" data-glance-bar></div>
       </div>
 
       <div class="course-filters" role="search" aria-label="جستجو و فیلتر دوره‌ها">
@@ -186,101 +246,137 @@
 
       <div class="grid grid--3" id="course-grid" data-reveal-stagger>
 
-        <a href="courses/ai-for-managers.html" class="card course-card" data-category="ai" data-instructors="sara-moradi reza-fallahi" data-hours="16">
-          <div class="course-card__media"><img loading="lazy" src="assets/img/optimized/course-ai.webp" alt="دوره هوش مصنوعی برای مدیران"></div>
+        <article class="card course-card" data-category="ai" data-instructors="sara-moradi reza-fallahi" data-hours="16" data-course="ai-for-managers">
+          <div class="course-card__media">
+            <img loading="lazy" src="assets/img/optimized/course-ai.webp" alt="دوره هوش مصنوعی برای مدیران">
+            <button class="course-card__quick" type="button" data-quickview="ai-for-managers">
+              <svg class="icon" aria-hidden="true" focusable="false"><use href="#i-eye"/></svg>
+              <span>پیش‌نمایش سریع</span><span class="sr-only">: هوش مصنوعی برای مدیران</span>
+            </button>
+          </div>
           <div class="course-card__body">
             <span class="course-card__tag">هوش مصنوعی</span>
-            <h3 class="course-card__title">هوش مصنوعی برای مدیران</h3>
+            <h3 class="course-card__title"><a class="course-card__link" href="courses/ai-for-managers.html">هوش مصنوعی برای مدیران</a></h3>
             <p class="course-card__desc">آشنایی مدیران با ابزارهای هوش مصنوعی برای تصمیم‌گیری سریع‌تر و بهینه‌سازی فرآیندهای سازمانی.</p>
             <div class="course-card__meta">
               <div class="course-card__instructor">
                 <img loading="lazy" class="avatar" src="assets/img/optimized/instructor-sara.webp" alt="">
                 <span>سارا مرادی</span>
               </div>
-              <span>۱۶ ساعت</span>
+              <span class="course-card__hours"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-clock"/></svg>۱۶ ساعت</span>
             </div>
           </div>
-        </a>
+        </article>
 
-        <a href="courses/managerial-accounting.html" class="card course-card" data-category="accounting" data-instructors="hossein-karimi" data-hours="20">
-          <div class="course-card__media"><img loading="lazy" src="assets/img/optimized/course-accounting.webp" alt="دوره حسابداری مدیریتی"></div>
+        <article class="card course-card" data-category="accounting" data-instructors="hossein-karimi" data-hours="20" data-course="managerial-accounting">
+          <div class="course-card__media">
+            <img loading="lazy" src="assets/img/optimized/course-accounting.webp" alt="دوره حسابداری مدیریتی">
+            <button class="course-card__quick" type="button" data-quickview="managerial-accounting">
+              <svg class="icon" aria-hidden="true" focusable="false"><use href="#i-eye"/></svg>
+              <span>پیش‌نمایش سریع</span><span class="sr-only">: حسابداری مدیریتی برای غیرمالی‌ها</span>
+            </button>
+          </div>
           <div class="course-card__body">
             <span class="course-card__tag">حسابداری</span>
-            <h3 class="course-card__title">حسابداری مدیریتی برای غیرمالی‌ها</h3>
+            <h3 class="course-card__title"><a class="course-card__link" href="courses/managerial-accounting.html">حسابداری مدیریتی برای غیرمالی‌ها</a></h3>
             <p class="course-card__desc">درک صورت‌های مالی، بودجه‌بندی و تحلیل هزینه برای مدیران غیرمالی سازمان.</p>
             <div class="course-card__meta">
               <div class="course-card__instructor">
                 <img loading="lazy" class="avatar" src="assets/img/optimized/instructor-hossein.webp" alt="">
                 <span>حسین کریمی</span>
               </div>
-              <span>۲۰ ساعت</span>
+              <span class="course-card__hours"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-clock"/></svg>۲۰ ساعت</span>
             </div>
           </div>
-        </a>
+        </article>
 
-        <a href="courses/financial-analysis.html" class="card course-card" data-category="accounting" data-instructors="hossein-karimi" data-hours="18">
-          <div class="course-card__media"><img loading="lazy" src="assets/img/optimized/course-finance.webp" alt="دوره تحلیل مالی پیشرفته"></div>
+        <article class="card course-card" data-category="accounting" data-instructors="hossein-karimi" data-hours="18" data-course="financial-analysis">
+          <div class="course-card__media">
+            <img loading="lazy" src="assets/img/optimized/course-finance.webp" alt="دوره تحلیل مالی پیشرفته">
+            <button class="course-card__quick" type="button" data-quickview="financial-analysis">
+              <svg class="icon" aria-hidden="true" focusable="false"><use href="#i-eye"/></svg>
+              <span>پیش‌نمایش سریع</span><span class="sr-only">: تحلیل مالی پیشرفته</span>
+            </button>
+          </div>
           <div class="course-card__body">
             <span class="course-card__tag">حسابداری</span>
-            <h3 class="course-card__title">تحلیل مالی پیشرفته</h3>
+            <h3 class="course-card__title"><a class="course-card__link" href="courses/financial-analysis.html">تحلیل مالی پیشرفته</a></h3>
             <p class="course-card__desc">ابزارها و تکنیک‌های تحلیل صورت‌های مالی برای ارزیابی عملکرد و ریسک کسب‌وکار.</p>
             <div class="course-card__meta">
               <div class="course-card__instructor">
                 <img loading="lazy" class="avatar" src="assets/img/optimized/instructor-hossein.webp" alt="">
                 <span>حسین کریمی</span>
               </div>
-              <span>۱۸ ساعت</span>
+              <span class="course-card__hours"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-clock"/></svg>۱۸ ساعت</span>
             </div>
           </div>
-        </a>
+        </article>
 
-        <a href="courses/ai-data-driven-decisions.html" class="card course-card" data-category="ai" data-instructors="sara-moradi reza-fallahi" data-hours="12">
-          <div class="course-card__media"><img loading="lazy" src="assets/img/optimized/course-data.webp" alt="دوره تصمیم‌گیری داده‌محور با هوش مصنوعی"></div>
+        <article class="card course-card" data-category="ai" data-instructors="sara-moradi reza-fallahi" data-hours="12" data-course="ai-data-driven-decisions">
+          <div class="course-card__media">
+            <img loading="lazy" src="assets/img/optimized/course-data.webp" alt="دوره تصمیم‌گیری داده‌محور با هوش مصنوعی">
+            <button class="course-card__quick" type="button" data-quickview="ai-data-driven-decisions">
+              <svg class="icon" aria-hidden="true" focusable="false"><use href="#i-eye"/></svg>
+              <span>پیش‌نمایش سریع</span><span class="sr-only">: تصمیم‌گیری داده‌محور با هوش مصنوعی</span>
+            </button>
+          </div>
           <div class="course-card__body">
             <span class="course-card__tag">هوش مصنوعی</span>
-            <h3 class="course-card__title">تصمیم‌گیری داده‌محور با هوش مصنوعی</h3>
+            <h3 class="course-card__title"><a class="course-card__link" href="courses/ai-data-driven-decisions.html">تصمیم‌گیری داده‌محور با هوش مصنوعی</a></h3>
             <p class="course-card__desc">استفاده از داده و مدل‌های هوش مصنوعی برای تصمیم‌گیری استراتژیک در سازمان.</p>
             <div class="course-card__meta">
               <div class="course-card__instructor">
                 <img loading="lazy" class="avatar" src="assets/img/optimized/instructor-sara.webp" alt="">
                 <span>سارا مرادی</span>
               </div>
-              <span>۱۲ ساعت</span>
+              <span class="course-card__hours"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-clock"/></svg>۱۲ ساعت</span>
             </div>
           </div>
-        </a>
+        </article>
 
-        <a href="courses/leadership-skills.html" class="card course-card" data-category="organization" data-instructors="mina-ahmadi" data-hours="14">
-          <div class="course-card__media"><img loading="lazy" src="assets/img/optimized/course-leadership.webp" alt="دوره مهارت‌های رهبری سازمانی"></div>
+        <article class="card course-card" data-category="organization" data-instructors="mina-ahmadi" data-hours="14" data-course="leadership-skills">
+          <div class="course-card__media">
+            <img loading="lazy" src="assets/img/optimized/course-leadership.webp" alt="دوره مهارت‌های رهبری سازمانی">
+            <button class="course-card__quick" type="button" data-quickview="leadership-skills">
+              <svg class="icon" aria-hidden="true" focusable="false"><use href="#i-eye"/></svg>
+              <span>پیش‌نمایش سریع</span><span class="sr-only">: مهارت‌های رهبری سازمانی</span>
+            </button>
+          </div>
           <div class="course-card__body">
             <span class="course-card__tag">مهارت‌های سازمانی</span>
-            <h3 class="course-card__title">مهارت‌های رهبری سازمانی</h3>
+            <h3 class="course-card__title"><a class="course-card__link" href="courses/leadership-skills.html">مهارت‌های رهبری سازمانی</a></h3>
             <p class="course-card__desc">تقویت مهارت‌های رهبری تیم، مدیریت تغییر و ارتباطات مؤثر برای مدیران میانی و ارشد.</p>
             <div class="course-card__meta">
               <div class="course-card__instructor">
                 <img loading="lazy" class="avatar" src="assets/img/optimized/instructor-mina.webp" alt="">
                 <span>مینا احمدی</span>
               </div>
-              <span>۱۴ ساعت</span>
+              <span class="course-card__hours"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-clock"/></svg>۱۴ ساعت</span>
             </div>
           </div>
-        </a>
+        </article>
 
-        <a href="courses/tax-and-budgeting.html" class="card course-card" data-category="accounting" data-instructors="hossein-karimi" data-hours="10">
-          <div class="course-card__media"><img loading="lazy" src="assets/img/optimized/course-tax.webp" alt="دوره مالیات و بودجه‌ریزی سازمانی"></div>
+        <article class="card course-card" data-category="accounting" data-instructors="hossein-karimi" data-hours="10" data-course="tax-and-budgeting">
+          <div class="course-card__media">
+            <img loading="lazy" src="assets/img/optimized/course-tax.webp" alt="دوره مالیات و بودجه‌ریزی سازمانی">
+            <button class="course-card__quick" type="button" data-quickview="tax-and-budgeting">
+              <svg class="icon" aria-hidden="true" focusable="false"><use href="#i-eye"/></svg>
+              <span>پیش‌نمایش سریع</span><span class="sr-only">: مالیات و بودجه‌ریزی سازمانی</span>
+            </button>
+          </div>
           <div class="course-card__body">
             <span class="course-card__tag">حسابداری</span>
-            <h3 class="course-card__title">مالیات و بودجه‌ریزی سازمانی</h3>
+            <h3 class="course-card__title"><a class="course-card__link" href="courses/tax-and-budgeting.html">مالیات و بودجه‌ریزی سازمانی</a></h3>
             <p class="course-card__desc">آشنایی با قوانین مالیاتی به‌روز و فرآیند بودجه‌ریزی سالانه سازمان.</p>
             <div class="course-card__meta">
               <div class="course-card__instructor">
                 <img loading="lazy" class="avatar" src="assets/img/optimized/instructor-hossein.webp" alt="">
                 <span>حسین کریمی</span>
               </div>
-              <span>۱۰ ساعت</span>
+              <span class="course-card__hours"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-clock"/></svg>۱۰ ساعت</span>
             </div>
           </div>
-        </a>
+        </article>
 
       </div>
       <div class="course-filters__empty" id="course-empty" hidden>
@@ -290,45 +386,116 @@
     </div>
   </section>
 
+  <!-- PROCESS -->
+  <section class="section process" id="process">
+    <div class="container process__layout">
+      <div class="process__aside">
+        <div class="section-head section-head--stack" data-reveal>
+          <div>
+            <span class="eyebrow"><span class="eyebrow__num">۰۳</span>فرآیند همکاری</span>
+            <h2>از درخواست تا گواهی، در چهار گام</h2>
+          </div>
+          <p>همکاری با تارا ساده و شفاف است؛ از اولین تماس تا پشتیبانی پس از دوره، کارشناسان ما کنار تیم شما هستند.</p>
+        </div>
+        <div class="process__counter" aria-hidden="true"><span data-process-current>۰۱</span><span class="process__total">/ ۰۴</span></div>
+        <a href="course-request.html" class="btn btn--primary">شروع با ثبت درخواست</a>
+      </div>
+      <ol class="process__steps" data-process>
+          <li class="process-step" data-step="1">
+            <span class="process-step__marker"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-send"/></svg></span>
+            <div class="process-step__body">
+              <span class="process-step__num">گام ۱</span>
+              <h3 class="process-step__title">ثبت درخواست</h3>
+              <p>نیاز تیم خود را از طریق فرم درخواست دوره یا فرم مشاوره رایگان ثبت کنید.</p>
+              <span class="process-step__meta">کد پیگیری بلافاصله صادر می‌شود</span>
+            </div>
+          </li>
+          <li class="process-step" data-step="2">
+            <span class="process-step__marker"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-chat"/></svg></span>
+            <div class="process-step__body">
+              <span class="process-step__num">گام ۲</span>
+              <h3 class="process-step__title">نیازسنجی</h3>
+              <p>کارشناسان تارا با شما تماس می‌گیرند تا نیاز تیم، زمان‌بندی و نحوه برگزاری را بررسی کنند.</p>
+              <span class="process-step__meta">معمولاً ظرف یک روز کاری</span>
+            </div>
+          </li>
+          <li class="process-step" data-step="3">
+            <span class="process-step__marker"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-board"/></svg></span>
+            <div class="process-step__body">
+              <span class="process-step__num">گام ۳</span>
+              <h3 class="process-step__title">طراحی و برگزاری</h3>
+              <p>مثال‌ها و تمرین‌ها با صنعت شما هماهنگ می‌شود و دوره حضوری، آنلاین یا ترکیبی برگزار می‌شود.</p>
+              <span class="process-step__meta">گروه‌های ۸ تا ۲۵ نفره</span>
+            </div>
+          </li>
+          <li class="process-step" data-step="4">
+            <span class="process-step__marker"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-award"/></svg></span>
+            <div class="process-step__body">
+              <span class="process-step__num">گام ۴</span>
+              <h3 class="process-step__title">گواهی و پشتیبانی</h3>
+              <p>شرکت‌کنندگان واجد شرایط گواهی پایان دوره می‌گیرند و تا یک ماه با مدرس در ارتباط هستند.</p>
+              <span class="process-step__meta">یک ماه پشتیبانی پس از دوره</span>
+            </div>
+          </li>
+      </ol>
+    </div>
+  </section>
+
   <!-- INSTRUCTORS -->
   <section class="section" id="instructors">
     <div class="container">
       <div class="section-head" data-reveal>
         <div>
-          <span class="eyebrow">مدرسان تارا</span>
+          <span class="eyebrow"><span class="eyebrow__num">۰۴</span>مدرسان تارا</span>
           <h2>یادگیری از متخصصان صنعت</h2>
         </div>
         <p>مدرسان تارا ترکیبی از تجربه اجرایی در سازمان‌های بزرگ و سابقه تدریس دانشگاهی دارند.</p>
       </div>
 
       <div class="grid grid--4" data-reveal-stagger>
-        <a href="instructors/sara-moradi.html" class="card instructor-card">
-          <img loading="lazy" class="instructor-card__photo" src="assets/img/optimized/instructor-sara.webp" alt="سارا مرادی">
+        <a href="instructors/sara-moradi.html" class="card instructor-card" data-instructor="sara-moradi">
+          <span class="instructor-card__avatar">
+            <img loading="lazy" class="instructor-card__photo" src="assets/img/optimized/instructor-sara.webp" alt="سارا مرادی">
+            <svg class="instructor-card__ring" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><circle cx="50" cy="50" r="48" pathLength="1"/></svg>
+          </span>
           <h3 class="instructor-card__name">سارا مرادی</h3>
           <div class="instructor-card__role">متخصص هوش مصنوعی سازمانی</div>
           <p class="instructor-card__bio">۱۰ سال تجربه در پیاده‌سازی راهکارهای هوش مصنوعی برای سازمان‌های بزرگ.</p>
-          <span class="btn btn--ghost btn--sm">مشاهده پروفایل</span>
+          <span class="instructor-card__courses" data-instructor-courses hidden></span>
+          <span class="btn btn--ghost btn--sm">مشاهده پروفایل <svg class="icon" aria-hidden="true" focusable="false"><use href="#i-arrow"/></svg></span>
         </a>
-        <a href="instructors/hossein-karimi.html" class="card instructor-card">
-          <img loading="lazy" class="instructor-card__photo" src="assets/img/optimized/instructor-hossein.webp" alt="حسین کریمی">
+        <a href="instructors/hossein-karimi.html" class="card instructor-card" data-instructor="hossein-karimi">
+          <span class="instructor-card__avatar">
+            <img loading="lazy" class="instructor-card__photo" src="assets/img/optimized/instructor-hossein.webp" alt="حسین کریمی">
+            <svg class="instructor-card__ring" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><circle cx="50" cy="50" r="48" pathLength="1"/></svg>
+          </span>
           <h3 class="instructor-card__name">حسین کریمی</h3>
           <div class="instructor-card__role">مدرس حسابداری و مالی</div>
           <p class="instructor-card__bio">حسابدار رسمی با بیش از ۱۵ سال سابقه مدیریت مالی در شرکت‌های هلدینگ.</p>
-          <span class="btn btn--ghost btn--sm">مشاهده پروفایل</span>
+          <span class="instructor-card__courses" data-instructor-courses hidden></span>
+          <span class="btn btn--ghost btn--sm">مشاهده پروفایل <svg class="icon" aria-hidden="true" focusable="false"><use href="#i-arrow"/></svg></span>
         </a>
-        <a href="instructors/mina-ahmadi.html" class="card instructor-card">
-          <img loading="lazy" class="instructor-card__photo" src="assets/img/optimized/instructor-mina.webp" alt="مینا احمدی">
+        <a href="instructors/mina-ahmadi.html" class="card instructor-card" data-instructor="mina-ahmadi">
+          <span class="instructor-card__avatar">
+            <img loading="lazy" class="instructor-card__photo" src="assets/img/optimized/instructor-mina.webp" alt="مینا احمدی">
+            <svg class="instructor-card__ring" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><circle cx="50" cy="50" r="48" pathLength="1"/></svg>
+          </span>
           <h3 class="instructor-card__name">مینا احمدی</h3>
           <div class="instructor-card__role">مربی توسعه سازمانی و رهبری</div>
           <p class="instructor-card__bio">مشاور توسعه منابع انسانی با تمرکز بر رهبری تیم و مدیریت تغییر.</p>
-          <span class="btn btn--ghost btn--sm">مشاهده پروفایل</span>
+          <span class="instructor-card__courses" data-instructor-courses hidden></span>
+          <span class="btn btn--ghost btn--sm">مشاهده پروفایل <svg class="icon" aria-hidden="true" focusable="false"><use href="#i-arrow"/></svg></span>
         </a>
-        <a href="instructors/reza-fallahi.html" class="card instructor-card">
-          <img loading="lazy" class="instructor-card__photo" src="assets/img/optimized/instructor-reza.webp" alt="رضا فلاحی">
+        <a href="instructors/reza-fallahi.html" class="card instructor-card" data-instructor="reza-fallahi">
+          <span class="instructor-card__avatar">
+            <img loading="lazy" class="instructor-card__photo" src="assets/img/optimized/instructor-reza.webp" alt="رضا فلاحی">
+            <svg class="instructor-card__ring" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><circle cx="50" cy="50" r="48" pathLength="1"/></svg>
+          </span>
           <h3 class="instructor-card__name">رضا فلاحی</h3>
           <div class="instructor-card__role">مدرس داده و هوش مصنوعی کاربردی</div>
           <p class="instructor-card__bio">دانش‌آموخته مهندسی کامپیوتر و متخصص علم داده در پروژه‌های سازمانی.</p>
-          <span class="btn btn--ghost btn--sm">مشاهده پروفایل</span>
+          <span class="instructor-card__courses" data-instructor-courses hidden></span>
+          <span class="btn btn--ghost btn--sm">مشاهده پروفایل <svg class="icon" aria-hidden="true" focusable="false"><use href="#i-arrow"/></svg></span>
         </a>
       </div>
     </div>
@@ -339,7 +506,7 @@
     <div class="container">
       <div class="section-head" data-reveal>
         <div>
-          <span class="eyebrow">نظر سازمان‌ها</span>
+          <span class="eyebrow"><span class="eyebrow__num">۰۵</span>نظر سازمان‌ها</span>
           <h2>تجربه همکاری با تارا</h2>
         </div>
       </div>
@@ -386,7 +553,7 @@
     <div class="container" style="max-width:860px;">
       <div class="section-head" data-reveal style="justify-content:center; text-align:center;">
         <div>
-          <span class="eyebrow">پرسش‌های متداول</span>
+          <span class="eyebrow"><span class="eyebrow__num">۰۶</span>پرسش‌های متداول</span>
           <h2>پاسخ پرسش‌های رایج سازمان‌ها</h2>
         </div>
       </div>
@@ -447,7 +614,7 @@
   <!-- CONSULTATION -->
   <section class="section" id="contact" style="background: var(--surface-raised); border-block: 1px solid var(--border);">
     <div class="container consult">
-      <div class="consult__pitch">
+      <div class="consult__pitch" data-reveal>
         <span class="eyebrow">مشاوره رایگان</span>
         <h2>آماده ارتقای مهارت‌های سازمان خود هستید؟</h2>
         <p>فرم را پر کنید تا کارشناسان تارا با شما تماس بگیرند و دوره‌ای متناسب با نیاز تیم‌تان پیشنهاد دهند. مشاوره و نیازسنجی اولیه رایگان است.</p>
@@ -461,7 +628,7 @@
         </p>
       </div>
 
-      <div class="info-card">
+      <div class="info-card" data-reveal style="--reveal-delay: 120ms;">
         <form class="form" id="consult-form" novalidate>
           <div class="form-field">
             <label class="form-label" for="consult-name">نام و نام خانوادگی</label>
@@ -507,6 +674,231 @@
 
 </main>
 
+<dialog class="quickview" id="quickview" aria-labelledby="qv-title">
+  <div class="quickview__inner">
+    <div class="quickview__media"><img alt="" data-qv="img"></div>
+    <div class="quickview__content">
+      <div class="quickview__top">
+        <span class="course-card__tag" data-qv="tag"></span>
+        <button class="quickview__close" type="button" autofocus data-qv-close aria-label="بستن پیش‌نمایش"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-close"/></svg></button>
+      </div>
+      <h2 class="quickview__title" id="qv-title" data-qv="title"></h2>
+      <p class="quickview__desc" data-qv="desc"></p>
+      <dl class="quickview__facts">
+        <div><dt><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-clock"/></svg>مدت دوره</dt><dd data-qv="hours"></dd></div>
+        <div><dt><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-calendar"/></svg>جلسات</dt><dd data-qv="sessions"></dd></div>
+        <div><dt><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-level"/></svg>سطح</dt><dd data-qv="level"></dd></div>
+        <div><dt><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-user"/></svg>مدرس</dt><dd data-qv="instructors"></dd></div>
+      </dl>
+      <h3 class="quickview__subhead">سرفصل‌ها</h3>
+      <ol class="quickview__modules" data-qv="modules"></ol>
+      <h3 class="quickview__subhead">مناسب برای</h3>
+      <ul class="quickview__audience" data-qv="audience"></ul>
+      <div class="quickview__actions">
+        <a class="btn btn--primary" data-qv="request" href="course-request.html">درخواست برگزاری</a>
+        <a class="btn btn--secondary" data-qv="page" href="#">صفحه کامل دوره</a>
+      </div>
+      <div class="quickview__nav">
+        <button class="btn btn--ghost btn--sm" type="button" data-qv-prev><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-chev-right"/></svg>دوره قبلی</button>
+        <span class="quickview__pos" data-qv="pos" aria-live="polite"></span>
+        <button class="btn btn--ghost btn--sm" type="button" data-qv-next>دوره بعدی<svg class="icon" aria-hidden="true" focusable="false"><use href="#i-chev-left"/></svg></button>
+      </div>
+    </div>
+  </div>
+</dialog>
+
+<script type="application/json" id="course-data">
+{
+ "ai-data-driven-decisions": {
+  "sessions": "۶ جلسه",
+  "level": "متوسط",
+  "modules": [
+   "تصمیم داده‌محور چیست؟",
+   "شاخص‌ها و داشبوردها",
+   "تحلیل اکتشافی و بخش‌بندی",
+   "مدل‌های پیش‌بینی برای مدیران",
+   "آزمایش و تصمیم",
+   "پروژه پایانی"
+  ],
+  "audience": [
+   "مدیران محصول، بازاریابی و عملیات",
+   "تحلیل‌گران کسب‌وکار",
+   "مدیران استراتژی و برنامه‌ریزی",
+   "تیم‌هایی که تازه داشبورد و گزارش‌دهی را راه‌اندازی کرده‌اند"
+  ],
+  "title": "تصمیم‌گیری داده‌محور با هوش مصنوعی",
+  "tag": "هوش مصنوعی",
+  "desc": "استفاده از داده و مدل‌های هوش مصنوعی برای تصمیم‌گیری استراتژیک در سازمان.",
+  "img": "assets/img/optimized/course-data.webp",
+  "alt": "دوره تصمیم‌گیری داده‌محور با هوش مصنوعی",
+  "hours": "۱۲ ساعت",
+  "instructors": [
+   {
+    "slug": "sara-moradi",
+    "name": "سارا مرادی"
+   },
+   {
+    "slug": "reza-fallahi",
+    "name": "رضا فلاحی"
+   }
+  ]
+ },
+ "ai-for-managers": {
+  "sessions": "۸ جلسه",
+  "level": "مقدماتی تا متوسط",
+  "modules": [
+   "مقدمه‌ای بر هوش مصنوعی برای مدیران",
+   "یادگیری ماشین و مدل‌های آماری",
+   "کاربردهای هوش مصنوعی در عملیات سازمانی",
+   "مدل‌های زبانی بزرگ (LLM) برای مدیران",
+   "استراتژی پیاده‌سازی هوش مصنوعی در سازمان",
+   "اخلاق، امنیت و ریسک‌های هوش مصنوعی",
+   "پروژه عملی: طراحی موردکاوی AI برای سازمان شما"
+  ],
+  "audience": [
+   "مدیران میانی و ارشد سازمان‌ها",
+   "تصمیم‌گیرندگان استراتژیک",
+   "مدیران حوزه IT، محصول، عملیات و منابع انسانی",
+   "کارآفرینان و صاحبان کسب‌وکار"
+  ],
+  "title": "هوش مصنوعی برای مدیران",
+  "tag": "هوش مصنوعی",
+  "desc": "آشنایی مدیران با ابزارهای هوش مصنوعی برای تصمیم‌گیری سریع‌تر و بهینه‌سازی فرآیندهای سازمانی.",
+  "img": "assets/img/optimized/course-ai.webp",
+  "alt": "دوره هوش مصنوعی برای مدیران",
+  "hours": "۱۶ ساعت",
+  "instructors": [
+   {
+    "slug": "sara-moradi",
+    "name": "سارا مرادی"
+   },
+   {
+    "slug": "reza-fallahi",
+    "name": "رضا فلاحی"
+   }
+  ]
+ },
+ "financial-analysis": {
+  "sessions": "۹ جلسه",
+  "level": "متوسط تا پیشرفته",
+  "modules": [
+   "مرور صورت‌های مالی از نگاه تحلیل‌گر",
+   "تحلیل نسبت‌های مالی",
+   "تحلیل جریان‌های نقدی",
+   "کیفیت سود و ریسک",
+   "ارزش‌گذاری کسب‌وکار",
+   "کارگاه عملی: تحلیل یک شرکت بورسی"
+  ],
+  "audience": [
+   "کارشناسان و مدیران مالی",
+   "تحلیل‌گران اعتباری بانک‌ها و نهادهای مالی",
+   "مدیران سرمایه‌گذاری و توسعه کسب‌وکار",
+   "اعضای هیئت‌مدیره و کمیته‌های حسابرسی"
+  ],
+  "title": "تحلیل مالی پیشرفته",
+  "tag": "حسابداری",
+  "desc": "ابزارها و تکنیک‌های تحلیل صورت‌های مالی برای ارزیابی عملکرد و ریسک کسب‌وکار.",
+  "img": "assets/img/optimized/course-finance.webp",
+  "alt": "دوره تحلیل مالی پیشرفته",
+  "hours": "۱۸ ساعت",
+  "instructors": [
+   {
+    "slug": "hossein-karimi",
+    "name": "حسین کریمی"
+   }
+  ]
+ },
+ "leadership-skills": {
+  "sessions": "۷ جلسه",
+  "level": "همه سطوح مدیریتی",
+  "modules": [
+   "از مدیر به رهبر",
+   "ارتباط مؤثر و بازخورد",
+   "ساخت و هدایت تیم",
+   "تفویض و توانمندسازی",
+   "رهبری در دوران تغییر",
+   "کارگاه پایانی: برنامه توسعه رهبری"
+  ],
+  "audience": [
+   "مدیران میانی و سرپرستان تیم",
+   "مدیران ارشدی که تیم جدید تحویل گرفته‌اند",
+   "کارشناسان مستعد ارتقا به نقش مدیریتی",
+   "مدیران منابع انسانی و توسعه سازمانی"
+  ],
+  "title": "مهارت‌های رهبری سازمانی",
+  "tag": "مهارت‌های سازمانی",
+  "desc": "تقویت مهارت‌های رهبری تیم، مدیریت تغییر و ارتباطات مؤثر برای مدیران میانی و ارشد.",
+  "img": "assets/img/optimized/course-leadership.webp",
+  "alt": "دوره مهارت‌های رهبری سازمانی",
+  "hours": "۱۴ ساعت",
+  "instructors": [
+   {
+    "slug": "mina-ahmadi",
+    "name": "مینا احمدی"
+   }
+  ]
+ },
+ "managerial-accounting": {
+  "sessions": "۱۰ جلسه",
+  "level": "مقدماتی",
+  "modules": [
+   "مبانی حسابداری برای غیرمالی‌ها",
+   "خواندن و تحلیل صورت‌های مالی",
+   "بودجه‌بندی و کنترل هزینه",
+   "تحلیل هزینه و نقطه سربه‌سر",
+   "شاخص‌های مالی کلیدی برای مدیران",
+   "پروژه پایانی: تحلیل مالی واحد سازمانی"
+  ],
+  "audience": [
+   "مدیران عملیات، فروش، بازاریابی و منابع انسانی",
+   "مدیران پروژه و مدیران محصول",
+   "کارآفرینان بدون پیش‌زمینه مالی"
+  ],
+  "title": "حسابداری مدیریتی برای غیرمالی‌ها",
+  "tag": "حسابداری",
+  "desc": "درک صورت‌های مالی، بودجه‌بندی و تحلیل هزینه برای مدیران غیرمالی سازمان.",
+  "img": "assets/img/optimized/course-accounting.webp",
+  "alt": "دوره حسابداری مدیریتی",
+  "hours": "۲۰ ساعت",
+  "instructors": [
+   {
+    "slug": "hossein-karimi",
+    "name": "حسین کریمی"
+   }
+  ]
+ },
+ "tax-and-budgeting": {
+  "sessions": "۵ جلسه",
+  "level": "مقدماتی تا متوسط",
+  "modules": [
+   "مبانی نظام مالیاتی ایران",
+   "سامانه مؤدیان و صورتحساب الکترونیکی",
+   "برنامه‌ریزی و ریسک مالیاتی",
+   "فرآیند بودجه‌ریزی سالانه",
+   "کنترل بودجه و تحلیل انحرافات"
+  ],
+  "audience": [
+   "کارشناسان و مدیران مالی و حسابداری",
+   "مدیران کسب‌وکارهای کوچک و متوسط",
+   "مسئولان بودجه و برنامه‌ریزی",
+   "مدیران غیرمالی درگیر در تدوین بودجه واحد خود"
+  ],
+  "title": "مالیات و بودجه‌ریزی سازمانی",
+  "tag": "حسابداری",
+  "desc": "آشنایی با قوانین مالیاتی به‌روز و فرآیند بودجه‌ریزی سالانه سازمان.",
+  "img": "assets/img/optimized/course-tax.webp",
+  "alt": "دوره مالیات و بودجه‌ریزی سازمانی",
+  "hours": "۱۰ ساعت",
+  "instructors": [
+   {
+    "slug": "hossein-karimi",
+    "name": "حسین کریمی"
+   }
+  ]
+ }
+}
+</script>
+
 <footer class="site-footer">
   <div class="container">
     <div class="footer__grid">
@@ -546,16 +938,19 @@
     <div class="footer__bottom">
       <span>© <span data-year></span> آکادمی تارا. تمامی حقوق محفوظ است.</span>
       <div class="social-links">
-        <a href="#" aria-label="اینستاگرام">📷</a>
+        <a href="#" aria-label="اینستاگرام"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-camera"/></svg></a>
         <a href="#" aria-label="لینکدین">in</a>
-        <a href="#" aria-label="تلگرام">✈</a>
+        <a href="#" aria-label="تلگرام"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-send"/></svg></a>
       </div>
     </div>
   </div>
 </footer>
 
-<script src="assets/js/main.js"></script>
-<script src="assets/js/form-utils.js"></script>
-<script src="assets/js/consultation.js"></script>
+<script src="assets/js/main.js?v=20261029"></script>
+<script src="assets/js/home-motion.js?v=20261029"></script>
+<script src="assets/js/home-editorial.js?v=20261029"></script>
+<script src="assets/js/hero-silk.js?v=20261029"></script>
+<script src="assets/js/form-utils.js?v=20261029"></script>
+<script src="assets/js/consultation.js?v=20261029"></script>
 </body>
 </html>

@@ -1,0 +1,217 @@
+/* =========================================================
+   TARA — Course pages: editorial layer (design system v2) + animated backgrounds
+   Scoped to body.page-course. Backgrounds are drawn by course-bg.js:
+   AI → neural network, accounting/finance → ledger & charts, organizational → converging paths.
+   ========================================================= */
+
+/* ---------- Icons ---------- */
+.icon-sprite { position: absolute; width: 0; height: 0; overflow: hidden; }
+.page-course .icon {
+  width: 1.25em;
+  height: 1.25em;
+  flex-shrink: 0;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.75;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vertical-align: middle;
+}
+
+/* ---------- Animated canvas layer ---------- */
+.course-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 0;
+  pointer-events: none;
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 1200ms ease;
+}
+.course-bg.is-ready { opacity: 1; }
+
+/* ---------- Header ---------- */
+.page-hero--course {
+  position: relative;
+  isolation: isolate;
+  overflow: clip;
+  padding-block: var(--space-12) var(--space-16);
+  background: linear-gradient(to bottom, var(--accent-subtle), var(--surface));
+}
+/* Quieter behind the title column (inline-start), full strength toward the info card */
+.page-hero--course > .course-bg {
+  -webkit-mask-image: linear-gradient(to left, rgb(0 0 0 / .35) 0%, rgb(0 0 0 / .55) 45%, black 80%);
+          mask-image: linear-gradient(to left, rgb(0 0 0 / .35) 0%, rgb(0 0 0 / .55) 45%, black 80%);
+}
+[dir="ltr"] .page-hero--course > .course-bg {
+  -webkit-mask-image: linear-gradient(to right, rgb(0 0 0 / .35) 0%, rgb(0 0 0 / .55) 45%, black 80%);
+          mask-image: linear-gradient(to right, rgb(0 0 0 / .35) 0%, rgb(0 0 0 / .55) 45%, black 80%);
+}
+.page-hero--course .detail-grid { align-items: center; }
+.course-hero__title {
+  margin-top: var(--space-4);
+  font-size: var(--text-title);
+  font-weight: 800;
+  line-height: var(--leading-display);
+  text-wrap: balance;
+}
+.course-hero__lead {
+  max-width: 55ch;
+  margin: 0;
+  font-size: var(--text-lg);
+  line-height: var(--leading-loose);
+  color: var(--text-body);
+}
+.page-hero--course .breadcrumb { margin-bottom: var(--space-8); }
+
+/* Glass info card */
+.info-card--glass {
+  background: color-mix(in oklch, var(--surface-raised) 84%, transparent);
+  backdrop-filter: blur(14px) saturate(1.2);
+  border-color: color-mix(in oklch, var(--border) 80%, transparent);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg);
+}
+.page-course .info-list li > span:first-child {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+.page-course .info-list .icon { width: 18px; height: 18px; color: var(--accent); }
+
+/* ---------- Section headings ---------- */
+.course-h2 {
+  font-size: var(--text-3xl);
+  font-weight: 800;
+  line-height: var(--leading-display);
+  margin-bottom: var(--space-6);
+}
+.course-h2__num {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-2);
+  font-size: var(--text-sm);
+  font-weight: 700;
+  color: var(--accent-2-text);
+  font-variant-numeric: tabular-nums;
+}
+.course-h2__num::after { content: ""; width: var(--space-6); height: 1px; background: var(--rule-gold); }
+.page-course .detail-grid section p { line-height: var(--leading-loose); }
+
+/* ---------- Audience ---------- */
+.audience-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3);
+}
+.audience-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  margin: 0;
+  padding: var(--space-4);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface-raised);
+  color: var(--text-body);
+}
+.audience-list .icon {
+  width: 22px;
+  height: 22px;
+  padding: 4px;
+  border-radius: 50%;
+  background: var(--accent-subtle);
+  color: var(--accent);
+}
+@media (max-width: 560px) { .audience-list { grid-template-columns: minmax(0, 1fr); } }
+
+/* ---------- What you'll learn ---------- */
+.learn-grid .feature {
+  position: relative;
+  padding: var(--space-5);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface-raised);
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--duration-fast) ease, box-shadow var(--duration-fast) ease, border-color var(--duration-fast) ease;
+}
+.learn-grid .feature:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); border-color: var(--rule-gold); }
+.page-course .feature__icon { font-size: 24px; transition: background-color var(--duration-fast) ease, color var(--duration-fast) ease; }
+.learn-grid .feature:hover .feature__icon { background: var(--accent); color: var(--color-neutral-0); }
+.page-course .feature__title { font-size: var(--text-lg); }
+.page-course .feature__desc { color: var(--text-body); line-height: var(--leading-normal); }
+
+/* ---------- Syllabus with an accent background ---------- */
+.course-syllabus { position: relative; isolation: isolate; }
+.course-syllabus > .course-bg {
+  inset: calc(var(--space-12) * -1) calc(var(--space-12) * -1);
+  width: calc(100% + var(--space-24));
+  height: calc(100% + var(--space-24));
+  -webkit-mask-image: radial-gradient(ellipse 60% 55% at 20% 50%, black, transparent 75%);
+          mask-image: radial-gradient(ellipse 60% 55% at 20% 50%, black, transparent 75%);
+}
+.course-syllabus .curriculum { counter-reset: module; }
+.course-syllabus .curriculum-item { counter-increment: module; }
+.course-syllabus .curriculum-item__head > span:first-child {
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--space-3);
+}
+.course-syllabus .curriculum-item__head > span:first-child::before {
+  content: counter(module, persian);
+  min-width: var(--space-6);
+  font-weight: 800;
+  color: var(--accent-2-text);
+  font-variant-numeric: tabular-nums;
+}
+.course-syllabus .curriculum-item[open] { border-color: var(--rule-gold); box-shadow: var(--shadow-md); }
+
+/* ---------- Sidebar ---------- */
+.page-course .detail-aside .instructor-card__photo {
+  border: 0;
+  box-shadow: 0 0 0 3px var(--surface-raised), 0 0 0 4px var(--accent-2);
+}
+.related-arrow { width: 14px !important; height: 14px !important; margin-inline-end: var(--space-1); transition: transform var(--duration-fast) ease; }
+.detail-aside a:hover .related-arrow { transform: translateX(-3px); }
+
+/* ---------- Closing band ---------- */
+.cta-band--course {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  border-radius: var(--radius-2xl);
+}
+.cta-band--course > .course-bg {
+  -webkit-mask-image: linear-gradient(to left, rgb(0 0 0 / .25), black 70%);
+          mask-image: linear-gradient(to left, rgb(0 0 0 / .25), black 70%);
+}
+.cta-band--course h2 { font-size: var(--text-section); font-weight: 800; }
+
+/* ---------- Footer ---------- */
+.page-course .social-links .icon { width: 18px; height: 18px; }
+
+/* ---------- Entrance (only with motion on) ---------- */
+.motion .page-hero--course .breadcrumb { animation: fade-in var(--duration-enter) ease-out backwards; }
+.motion .page-hero--course .detail-grid > div:first-child > * { animation: fade-up var(--duration-enter) var(--ease-out) backwards; }
+.motion .page-hero--course .detail-grid > div:first-child > :nth-child(2) { animation-delay: 90ms; }
+.motion .page-hero--course .detail-grid > div:first-child > :nth-child(3) { animation-delay: 180ms; }
+.motion .page-hero--course .info-card--glass { animation: fade-up 800ms var(--ease-out) 200ms backwards; }
+
+@media (max-width: 860px) {
+  .page-hero--course { padding-block: var(--space-10) var(--space-12); }
+  .page-hero--course > .course-bg,
+  .cta-band--course > .course-bg {
+    -webkit-mask-image: linear-gradient(to bottom, rgb(0 0 0 / .45), black 60%);
+            mask-image: linear-gradient(to bottom, rgb(0 0 0 / .45), black 60%);
+  }
+  .course-syllabus > .course-bg { inset: calc(var(--space-6) * -1) calc(var(--space-6) * -1); width: calc(100% + var(--space-12)); height: calc(100% + var(--space-12)); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .learn-grid .feature:hover { transform: none; }
+}
